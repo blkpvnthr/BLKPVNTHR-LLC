@@ -479,6 +479,11 @@
       return b;
     }
 
+    // Optional per-still hint (set via data-note), shown muted under the image.
+    var note = document.createElement('p');
+    note.className = 'lightbox-note';
+    note.hidden = true;
+
     var prev = makeButton('lightbox-nav lightbox-prev', 'Previous image', '‹');
     var next = makeButton('lightbox-nav lightbox-next', 'Next image', '›');
     var close = makeButton('lightbox-close', 'Close', '✕');
@@ -486,6 +491,7 @@
     // Single stills can skip the prev/next controls entirely.
     var many = stills.length > 1;
     overlay.appendChild(full);
+    overlay.appendChild(note);
     if (many) {
       overlay.appendChild(prev);
       overlay.appendChild(next);
@@ -506,6 +512,9 @@
         'aria-label',
         (full.alt || 'Enlarged image') + ' (' + (i + 1) + ' of ' + stills.length + ')'
       );
+      var hint = still.getAttribute('data-note');
+      note.textContent = hint || '';
+      note.hidden = !hint;
     }
 
     function stopAuto() {
