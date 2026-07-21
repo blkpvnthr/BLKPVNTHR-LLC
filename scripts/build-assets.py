@@ -46,12 +46,25 @@ def font(size: int, index: int = 0) -> ImageFont.FreeTypeFont:
 
 
 def recolour_mark(size: int, colour=WHITE) -> Image.Image:
-    """Recolour the source silhouette, preserving its alpha channel."""
+    """Recolour the source silhouette to `colour` and return it centred in a
+    transparent square. The source is first cropped to its non-transparent
+    content and scaled to fit, so a non-square source is never distorted."""
     src = Image.open(SOURCE_MARK).convert("RGBA")
+    bbox = src.split()[3].getbbox()
+    if bbox:
+        src = src.crop(bbox)
     alpha = src.split()[3]
     mark = Image.new("RGBA", src.size, colour)
     mark.putalpha(alpha)
-    return mark.resize((size, size), Image.LANCZOS)
+
+    w, h = mark.size
+    scale = size / max(w, h)
+    dims = (max(1, round(w * scale)), max(1, round(h * scale)))
+    mark = mark.resize(dims, Image.LANCZOS)
+
+    canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    canvas.alpha_composite(mark, ((size - dims[0]) // 2, (size - dims[1]) // 2))
+    return canvas
 
 
 def rounded_icon(size: int, radius_ratio: float = 0.18, inset_ratio: float = 0.12) -> Image.Image:
