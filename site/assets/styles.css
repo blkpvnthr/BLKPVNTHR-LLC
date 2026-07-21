@@ -301,6 +301,20 @@ hr {
   backdrop-filter: saturate(140%) blur(12px);
   -webkit-backdrop-filter: saturate(140%) blur(12px);
   border-bottom: 1px solid var(--line);
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+
+/* Slide the whole bar up on scroll-down, back down on scroll-up. JS toggles
+   .is-hidden; translateY(-100%) lifts it fully off-screen, border included. */
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
+  }
 }
 
 .header-inner {
@@ -341,29 +355,6 @@ hr {
   align-items: center;
   gap: 0.25rem;
   margin-left: auto;
-}
-
-/* Hide-on-scroll-down, reveal-on-scroll-up — desktop nav only. JS toggles
-   .is-hidden; the header (brand) stays put while the links fade out and lift
-   away. Scoped to >1060px so the mobile disclosure panel is never affected. */
-@media (min-width: 1061px) {
-  .nav {
-    transition:
-      opacity 0.25s ease,
-      transform 0.25s ease;
-  }
-
-  .nav.is-hidden {
-    opacity: 0;
-    transform: translateY(-0.5rem);
-    pointer-events: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .nav {
-    transition: none;
-  }
 }
 
 .nav-link {

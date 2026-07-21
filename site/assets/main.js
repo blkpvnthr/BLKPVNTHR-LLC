@@ -254,17 +254,13 @@
   })();
 
   /* ---------------------------------------------------------------------
-     Hide the primary nav on scroll down, reveal it on scroll up
-
-     Desktop only: below 1061px the nav is a toggle-driven disclosure panel,
-     so the scroll effect (and its .is-hidden class) must not touch it.
+     Slide the whole header bar up on scroll down, reveal it on scroll up
      --------------------------------------------------------------------- */
-  (function initHideNavOnScroll() {
+  (function initHideOnScroll() {
     var header = document.querySelector('.site-header');
-    var nav = document.getElementById('primary-nav');
-    if (!header || !nav || prefersReducedMotion) return;
+    if (!header || prefersReducedMotion) return;
 
-    var desktop = window.matchMedia('(min-width: 1061px)');
+    var nav = document.getElementById('primary-nav');
     var lastY = window.pageYOffset || 0;
     var ticking = false;
     // Ignore jitter and iOS rubber-band overscroll; only react to real intent.
@@ -277,11 +273,13 @@
 
       if (Math.abs(diff) < DELTA) return;
 
-      // Only manage the inline desktop nav; leave the mobile panel to the toggle.
-      if (desktop.matches && diff > 0 && y > header.offsetHeight) {
-        nav.classList.add('is-hidden');
+      // Always show near the top, and never hide while the mobile menu is open
+      // (the nav lives inside the header — sliding it away would trap the panel).
+      var menuOpen = nav && nav.classList.contains('is-open');
+      if (diff > 0 && y > header.offsetHeight && !menuOpen) {
+        header.classList.add('is-hidden');
       } else if (diff < 0 || y <= header.offsetHeight) {
-        nav.classList.remove('is-hidden');
+        header.classList.remove('is-hidden');
       }
 
       lastY = y;
@@ -297,12 +295,5 @@
       },
       { passive: true }
     );
-
-    // Dropping back to the mobile layout must clear any lingering hidden state.
-    var onChange = function (event) {
-      if (!event.matches) nav.classList.remove('is-hidden');
-    };
-    if (desktop.addEventListener) desktop.addEventListener('change', onChange);
-    else if (desktop.addListener) desktop.addListener(onChange);
   })();
 })();
