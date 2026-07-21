@@ -252,4 +252,48 @@
       observer.observe(node);
     });
   })();
+
+  /* ---------------------------------------------------------------------
+     Hide the header on scroll down, reveal it on scroll up
+     --------------------------------------------------------------------- */
+  (function initHideOnScroll() {
+    var header = document.querySelector('.site-header');
+    if (!header || prefersReducedMotion) return;
+
+    var nav = document.getElementById('primary-nav');
+    var lastY = window.pageYOffset || 0;
+    var ticking = false;
+    // Ignore jitter and iOS rubber-band overscroll; only react to real intent.
+    var DELTA = 6;
+
+    function update() {
+      ticking = false;
+      var y = Math.max(0, window.pageYOffset || 0);
+      var diff = y - lastY;
+
+      if (Math.abs(diff) < DELTA) return;
+
+      // Always show near the top, and never hide while the mobile menu is open
+      // (the nav lives inside the header — hiding it would trap the panel).
+      var menuOpen = nav && nav.classList.contains('is-open');
+      if (diff > 0 && y > header.offsetHeight && !menuOpen) {
+        header.classList.add('is-hidden');
+      } else if (diff < 0 || y <= header.offsetHeight) {
+        header.classList.remove('is-hidden');
+      }
+
+      lastY = y;
+    }
+
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (!ticking) {
+          ticking = true;
+          window.requestAnimationFrame(update);
+        }
+      },
+      { passive: true }
+    );
+  })();
 })();

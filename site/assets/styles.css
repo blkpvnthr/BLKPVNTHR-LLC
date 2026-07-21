@@ -301,6 +301,20 @@ hr {
   backdrop-filter: saturate(140%) blur(12px);
   -webkit-backdrop-filter: saturate(140%) blur(12px);
   border-bottom: 1px solid var(--line);
+  transition: transform 0.28s ease;
+  will-change: transform;
+}
+
+/* Hide-on-scroll-down, reveal-on-scroll-up. JS toggles .is-hidden; the header
+   slides up by its own full height (border included) so nothing peeks out. */
+.site-header.is-hidden {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
+  }
 }
 
 .header-inner {
