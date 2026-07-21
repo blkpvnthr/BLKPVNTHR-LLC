@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
 """
-Generate the BLKPVNTHR LLC icon and social-sharing assets.
+Generate the BLKPVNTHR LLC logo and social-sharing assets.
 
-Source mark: the existing BLKPVNTHR panther head used by BLKPVNTHR.OS. It is a
-dark silhouette on transparency, so it is recoloured to ivory here rather than
-redrawn — no new brand mark is invented.
+Source mark: the BLKPVNTHR panther head (`scripts/brand-panther.png`), a dark
+silhouette on transparency. It is recoloured to white here — the transparent
+cut-outs (eye, mouth) are preserved, so on a dark surface the panther reads
+white with the surface showing through the negative space.
 
-Text is set in Helvetica Neue, which is the declared fallback for both Sora and
-Inter in the site stylesheet, so the card stays visually consistent with the
-page even though the webfonts themselves are not available offline.
+Text on the OG card is set in Helvetica Neue, the declared fallback for both
+Sora and Inter in the site stylesheet, so the card stays consistent with the
+page even though the webfonts are not available offline.
 
 Outputs (site/assets/):
-    blkpvnthr-mark.png      ivory mark on transparency, 512px
-    favicon-32.png          32x32
+    blkpvnthr-mark.png      white mark on transparency, 512px (header/footer/OG logo)
+    favicon-32.png          32x32   white mark on a dark rounded tile
     favicon-180.png         180x180 (apple-touch-icon)
     favicon-512.png         512x512
     og-card.png             1200x630 social card
@@ -26,10 +27,11 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "site" / "assets"
-SOURCE_MARK = Path.home() / "BLKPVNTHR-OS" / "public" / "blkpvnthr-icon-transparent.png"
+SOURCE_MARK = ROOT / "scripts" / "brand-panther.png"
 
 BG = (10, 10, 10, 255)          # --bg
-INK = (245, 245, 240, 255)      # --ink
+WHITE = (255, 255, 255, 255)    # the mark colour (requested)
+INK = (245, 245, 240, 255)      # --ink (card wordmark/text)
 INK_MUTED = (156, 156, 150, 255)  # --ink-muted
 INK_FAINT = (128, 128, 120, 255)  # --ink-faint
 ACCENT = (143, 180, 162, 255)   # --accent
@@ -43,17 +45,17 @@ def font(size: int, index: int = 0) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(HELVETICA, size, index=index)
 
 
-def ivory_mark(size: int) -> Image.Image:
-    """Recolour the source silhouette to ivory, preserving its alpha channel."""
+def recolour_mark(size: int, colour=WHITE) -> Image.Image:
+    """Recolour the source silhouette, preserving its alpha channel."""
     src = Image.open(SOURCE_MARK).convert("RGBA")
     alpha = src.split()[3]
-    mark = Image.new("RGBA", src.size, INK)
+    mark = Image.new("RGBA", src.size, colour)
     mark.putalpha(alpha)
     return mark.resize((size, size), Image.LANCZOS)
 
 
-def rounded_icon(size: int, radius_ratio: float = 0.18) -> Image.Image:
-    """Mark centred on a rounded near-black tile."""
+def rounded_icon(size: int, radius_ratio: float = 0.18, inset_ratio: float = 0.12) -> Image.Image:
+    """White mark centred on a rounded near-black tile (visible on any tab bar)."""
     scale = 4  # supersample, then downsample for clean edges
     big = size * scale
     tile = Image.new("RGBA", (big, big), (0, 0, 0, 0))
@@ -61,8 +63,8 @@ def rounded_icon(size: int, radius_ratio: float = 0.18) -> Image.Image:
         (0, 0, big - 1, big - 1), radius=int(big * radius_ratio), fill=BG
     )
 
-    inset = int(big * 0.14)
-    mark = ivory_mark(big - inset * 2)
+    inset = int(big * inset_ratio)
+    mark = recolour_mark(big - inset * 2)
     tile.alpha_composite(mark, (inset, inset))
 
     return tile.resize((size, size), Image.LANCZOS)
@@ -89,13 +91,13 @@ def og_card() -> Image.Image:
     draw.line([(W - pad, 0), (W - pad, H)], fill=LINE, width=1)
     draw.line([(0, H - 128), (W, H - 128)], fill=LINE, width=1)
 
-    # Brand lockup
-    mark = ivory_mark(52)
-    card.alpha_composite(mark, (pad + 32, 64))
+    # Brand lockup — white panther mark + wordmark.
+    mark = recolour_mark(56)
+    card.alpha_composite(mark, (pad + 30, 62))
     tracked_text(
-        draw, (pad + 96, 78), "BLKPVNTHR", font(25, 1), INK, tracking=1.4
+        draw, (pad + 100, 78), "BLKPVNTHR", font(25, 1), INK, tracking=1.4
     )
-    draw.text((pad + 96 + 168, 78), " LLC", font=font(25, 0), fill=INK_FAINT)
+    draw.text((pad + 100 + 168, 78), " LLC", font=font(25, 0), fill=INK_FAINT)
 
     # Eyebrow
     tracked_text(
@@ -145,7 +147,7 @@ def main() -> None:
 
     ASSETS.mkdir(parents=True, exist_ok=True)
 
-    ivory_mark(512).save(ASSETS / "blkpvnthr-mark.png")
+    recolour_mark(512).save(ASSETS / "blkpvnthr-mark.png")
     for size in (32, 180, 512):
         rounded_icon(size).save(ASSETS / f"favicon-{size}.png")
     og_card().convert("RGB").save(ASSETS / "og-card.png", quality=95)
