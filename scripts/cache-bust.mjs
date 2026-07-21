@@ -30,8 +30,9 @@ import { join, resolve } from 'node:path';
 const root = resolve(process.argv[2] || 'site');
 
 // /assets/<file>.<ext> with an optional pre-existing ?v=<hex> to overwrite.
+// Covers stylesheets, scripts, images, and hover-preview media.
 const ASSET_RE =
-  /\/assets\/([A-Za-z0-9._-]+\.(?:css|js|png|webp|avif|jpe?g|svg|ico))(?:\?v=[a-f0-9]+)?/g;
+  /\/assets\/([A-Za-z0-9._-]+\.(?:css|js|png|webp|avif|jpe?g|gif|svg|ico|mp4|webm))(?:\?v=[a-f0-9]+)?/g;
 
 const hashes = new Map();
 function hashFor(relPath) {

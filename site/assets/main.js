@@ -296,4 +296,152 @@
       { passive: true }
     );
   })();
+
+  /* ---------------------------------------------------------------------
+     Product hover previews
+
+     Each .has-preview card summons a mid-sized floating box that plays its
+     preview (a looping GIF or muted looping video). The box is a single
+     element appended to <body> so it escapes the products grid's
+     `overflow: hidden` and the .reveal transform's containing block; it is
+     positioned per-card with position: fixed and repositioned on scroll.
+     Enabled only where a real hover pointer exists (skipped on touch).
+     --------------------------------------------------------------------- */
+  (function initProductPreviews() {
+    var cards = Array.prototype.slice.call(document.querySelectorAll('.product.has-preview'));
+    if (!cards.length) return;
+    if (!window.matchMedia('(hover: hover)').matches) return;
+
+    var GAP = 12; // px between the card edge and the box
+    var box = document.createElement('div');
+    box.className = 'product-preview';
+    box.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(box);
+
+    var active = null; // the card currently showing a preview
+    var hideTimer = null;
+
+    function buildMedia(card) {
+      box.innerHTML = '';
+      var type = card.getAttribute('data-preview-type');
+      var src = card.getAttribute('data-preview-src');
+      var media;
+      if (type === 'video') {
+        media = document.createElement('video');
+        media.muted = true; // required for programmatic autoplay
+        media.loop = true;
+        media.playsInline = true;
+        media.autoplay = true;
+        media.preload = 'auto';
+        var poster = card.getAttribute('data-preview-poster');
+        if (poster) media.poster = poster;
+        // WebM/VP9 first (every Chromium/Firefox decodes it), MP4/H.264 as the
+        // Safari fallback — the browser picks the first source it can play.
+        var webm = card.getAttribute('data-preview-src-webm');
+        if (webm) {
+          var webmSource = document.createElement('source');
+          webmSource.src = webm;
+          webmSource.type = 'video/webm';
+          media.appendChild(webmSource);
+        }
+        var mp4Source = document.createElement('source');
+        mp4Source.src = src;
+        mp4Source.type = 'video/mp4';
+        media.appendChild(mp4Source);
+      } else {
+        media = document.createElement('img');
+        media.decoding = 'async';
+        media.alt = '';
+        media.src = src; // a fresh element restarts the GIF from frame one
+      }
+      media.className = 'product-preview-media';
+      box.appendChild(media);
+      if (type === 'video') {
+        var p = media.play();
+        if (p && typeof p.catch === 'function') p.catch(function () {});
+      }
+    }
+
+    function position(card) {
+      var r = card.getBoundingClientRect();
+      var vw = document.documentElement.clientWidth;
+      var vh = document.documentElement.clientHeight;
+      var bw = box.offsetWidth;
+      var bh = box.offsetHeight;
+
+      // Prefer above the card; drop below if there is not enough headroom.
+      var pointsDown = false;
+      var top = r.top - bh - GAP;
+      if (top < 8) {
+        top = r.bottom + GAP;
+        pointsDown = true;
+      }
+      // Last resort: if it also overflows the bottom, pin within the viewport.
+      if (top + bh > vh - 8) top = Math.max(8, vh - bh - 8);
+      box.classList.toggle('points-down', pointsDown);
+
+      var centre = r.left + r.width / 2;
+      var left = Math.min(Math.max(8, centre - bw / 2), vw - bw - 8);
+      box.style.left = Math.round(left) + 'px';
+      box.style.top = Math.round(top) + 'px';
+      box.style.setProperty('--arrow-x', Math.round(centre - left) + 'px');
+    }
+
+    function show(card) {
+      if (hideTimer) {
+        clearTimeout(hideTimer);
+        hideTimer = null;
+      }
+      if (active === card) return;
+      active = card;
+      buildMedia(card);
+      position(card); // measure with media laid out (aspect-ratio gives height)
+      // A second pass next frame catches any late layout (e.g. scrollbar shift).
+      window.requestAnimationFrame(function () {
+        if (active === card) {
+          position(card);
+          box.classList.add('is-visible');
+        }
+      });
+    }
+
+    function hide(card) {
+      if (active !== card) return;
+      active = null;
+      box.classList.remove('is-visible');
+      // Clear media after the fade so network/CPU stops but no blank flash shows.
+      hideTimer = setTimeout(function () {
+        if (!active) box.innerHTML = '';
+      }, 200);
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener('mouseenter', function () {
+        show(card);
+      });
+      card.addEventListener('mouseleave', function () {
+        hide(card);
+      });
+      // Keyboard parity: focusing the card's link reveals the preview too.
+      card.addEventListener('focusin', function () {
+        show(card);
+      });
+      card.addEventListener('focusout', function (event) {
+        if (!card.contains(event.relatedTarget)) hide(card);
+      });
+    });
+
+    // Keep the box glued to its card while scrolling; hide on resize to avoid
+    // a stale rect (a hovered card is uncommon during a resize anyway).
+    window.addEventListener(
+      'scroll',
+      function () {
+        if (active) position(active);
+      },
+      { passive: true }
+    );
+    window.addEventListener('resize', function () {
+      if (active) hide(active);
+    });
+  })();
 })();

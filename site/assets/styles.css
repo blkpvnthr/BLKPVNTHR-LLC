@@ -974,6 +974,81 @@ hr {
   padding-top: 0.5rem;
 }
 
+/* Cards with a hover preview hint at it: a soft accent edge and a cursor that
+   signals there is something to reveal. */
+.product.has-preview {
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease);
+}
+
+.product.has-preview:hover,
+.product.has-preview:focus-within {
+  background: var(--panel);
+}
+
+/* Floating preview box. Rendered as a direct child of <body> (see main.js) so
+   it escapes the products grid's `overflow: hidden` and the .reveal transform
+   containing-block; positioned per-card with position: fixed. */
+.product-preview {
+  --arrow-x: 50%; /* horizontal arrow offset; JS overrides per card */
+  position: fixed;
+  z-index: 200;
+  width: 360px;
+  max-width: 88vw;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.55);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.18s var(--ease),
+    transform 0.18s var(--ease);
+  pointer-events: none; /* never intercept the hover that summoned it */
+}
+
+.product-preview.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Little pointer joining the box to its card; JS sets --arrow-x and flips
+   .points-down when the box sits above the card instead of below. */
+.product-preview::after {
+  content: '';
+  position: absolute;
+  left: var(--arrow-x, 50%);
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+}
+
+.product-preview:not(.points-down)::after {
+  bottom: 100%;
+  border-bottom-color: var(--line-strong);
+}
+
+.product-preview.points-down::after {
+  top: 100%;
+  border-top-color: var(--line-strong);
+}
+
+.product-preview-media {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .product-preview {
+    transition: none;
+    transform: none;
+  }
+}
+
 /* --------------------------------------------------------------------------
    11. ReactorCast section
    -------------------------------------------------------------------------- */
