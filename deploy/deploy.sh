@@ -54,16 +54,25 @@ chown -R root:root "${REL}"
 find "${REL}" -type d -exec chmod 755 {} +
 find "${REL}" -type f -exec chmod 644 {} +
 
+# Guard: never point current at an empty/broken extract.
+test -f "${REL}/index.html" || { echo "!! extracted release has no index.html — aborting" >&2; exit 1; }
+
 # Atomic swap: build the new symlink beside the old, then rename over it. mv -T
 # is atomic on one filesystem, so no request ever sees a missing document root.
 ln -sfn "${REL}" "${BASE}/current.tmp"
 mv -Tf "${BASE}/current.tmp" "${BASE}/current"
 
+# Guard: confirm the live root resolves before touching anything else.
+test -f "${BASE}/current/index.html" || { echo "!! current/index.html missing after swap — aborting" >&2; exit 1; }
+
 # nginx resolves the symlink per request; the reload just clears cached fds.
 nginx -t && systemctl reload nginx
 
-# Prune old releases, keeping the most recent KEEP.
-ls -1dt "${BASE}"/releases/*/ | tail -n +$((KEEP + 1)) | xargs -r rm -rf || true
+# Prune old releases by NAME, keeping the most recent KEEP. Release dirs are
+# named YYYYMMDD-HHMMSS, so a lexical sort is chronological. Sorting by mtime
+# (ls -1dt) is WRONG here: `tar -C site .` backdates the new dir's mtime to
+# site/'s mtime, so an mtime sort can delete the release just published.
+ls -1d "${BASE}"/releases/*/ | sort | head -n "-${KEEP}" | xargs -r rm -rf || true
 
 echo ">> Released ${TS} ($(ls -1d "${BASE}"/releases/*/ | wc -l) release(s) retained)"
 REMOTE
