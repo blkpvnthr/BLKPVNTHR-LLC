@@ -995,6 +995,64 @@ hr {
   margin-top: 1px;
 }
 
+/* Featured terminal-navigation showcase: a constrained copy block above a
+   full-width, click-to-expand screenshot of the OS command line. */
+.os-terminal {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+}
+
+.os-terminal-copy {
+  max-width: 70ch;
+  margin-bottom: clamp(1.25rem, 3vw, 2rem);
+}
+
+.os-terminal-copy .card-title {
+  margin-top: 0.25rem;
+}
+
+.os-terminal-copy .card-body {
+  margin-top: 0.75rem;
+}
+
+.os-terminal-copy code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0.1em 0.4em;
+}
+
+.os-terminal-shot {
+  position: relative;
+  border: 1px solid var(--line-faint);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: #000;
+  cursor: zoom-in;
+}
+
+.os-terminal-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  transition: transform 0.5s var(--ease);
+}
+
+.os-terminal-shot:hover img {
+  transform: scale(1.02);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-terminal-shot img {
+    transition: none;
+  }
+  .os-terminal-shot:hover img {
+    transform: none;
+  }
+}
+
 /* Fullscreen lightbox — a single overlay reused for whichever still is clicked.
    Hidden from layout and AT until opened; JS toggles .is-open. */
 .lightbox {

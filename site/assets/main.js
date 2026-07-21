@@ -454,9 +454,10 @@
      it and returns focus to the still that opened it.
      --------------------------------------------------------------------- */
   (function initBrainLightbox() {
-    var stills = Array.prototype.slice.call(
-      document.querySelectorAll('.os-brain .card-media img[data-full]')
-    );
+    // Every expandable still in the Brain section — the six explainer cards
+    // plus the featured terminal shot — in DOM order, so the gallery cycles
+    // through all of them.
+    var stills = Array.prototype.slice.call(document.querySelectorAll('.os-brain img[data-full]'));
     if (!stills.length) return;
 
     var overlay = document.createElement('div');
