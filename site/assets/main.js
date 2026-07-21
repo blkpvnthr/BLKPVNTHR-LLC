@@ -469,23 +469,44 @@
     full.className = 'lightbox-image';
     full.alt = '';
 
-    var close = document.createElement('button');
-    close.type = 'button';
-    close.className = 'lightbox-close';
-    close.setAttribute('aria-label', 'Close');
-    close.innerHTML = '✕';
+    function makeButton(cls, label, glyph) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = cls;
+      b.setAttribute('aria-label', label);
+      b.innerHTML = glyph;
+      return b;
+    }
 
+    var prev = makeButton('lightbox-nav lightbox-prev', 'Previous image', '‹');
+    var next = makeButton('lightbox-nav lightbox-next', 'Next image', '›');
+    var close = makeButton('lightbox-close', 'Close', '✕');
+
+    // Single stills can skip the prev/next controls entirely.
+    var many = stills.length > 1;
     overlay.appendChild(full);
+    if (many) {
+      overlay.appendChild(prev);
+      overlay.appendChild(next);
+    }
     overlay.appendChild(close);
     document.body.appendChild(overlay);
 
-    var opener = null;
+    var index = -1; // which still is currently shown
 
-    function open(still) {
-      opener = still;
+    function render(i) {
+      var still = stills[i];
       full.src = still.getAttribute('data-full');
       full.alt = still.getAttribute('alt') || '';
-      overlay.setAttribute('aria-label', full.alt || 'Enlarged image');
+      overlay.setAttribute(
+        'aria-label',
+        (full.alt || 'Enlarged image') + ' (' + (i + 1) + ' of ' + stills.length + ')'
+      );
+    }
+
+    function open(still) {
+      index = stills.indexOf(still);
+      render(index);
       overlay.hidden = false;
       document.body.style.overflow = 'hidden';
       // Commit the hidden state (display/opacity) with a forced reflow so the
@@ -493,15 +514,22 @@
       // after .is-open, since a visibility:hidden node can't hold focus.
       void overlay.offsetWidth;
       overlay.classList.add('is-open');
-      close.focus();
+      (many ? next : close).focus();
+    }
+
+    // Cycle through every still; wraps at both ends.
+    function navigate(delta) {
+      if (overlay.hidden || !many) return;
+      index = (index + delta + stills.length) % stills.length;
+      render(index);
     }
 
     function dismiss() {
       if (overlay.hidden) return;
       overlay.classList.remove('is-open');
       document.body.style.overflow = '';
-      var restore = opener;
-      opener = null;
+      // Return focus to the still currently shown, not just the one first opened.
+      var restore = stills[index];
       var finish = function () {
         overlay.hidden = true;
         full.removeAttribute('src');
@@ -531,15 +559,30 @@
       });
     });
 
-    // A click anywhere on the overlay (backdrop or the image) closes it; the
-    // image is contain-fit with dead space around it, so this reads naturally.
+    // Clicking the backdrop (the dead space around the contain-fit image) closes;
+    // clicks on the image or controls are handled on their own and don't bubble.
     overlay.addEventListener('click', dismiss);
+    full.addEventListener('click', function (event) {
+      event.stopPropagation();
+    });
+    prev.addEventListener('click', function (event) {
+      event.stopPropagation();
+      navigate(-1);
+    });
+    next.addEventListener('click', function (event) {
+      event.stopPropagation();
+      navigate(1);
+    });
     close.addEventListener('click', function (event) {
       event.stopPropagation();
       dismiss();
     });
+
     document.addEventListener('keydown', function (event) {
+      if (overlay.hidden) return;
       if (event.key === 'Escape') dismiss();
+      else if (event.key === 'ArrowLeft') navigate(-1);
+      else if (event.key === 'ArrowRight') navigate(1);
     });
   })();
 })();

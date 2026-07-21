@@ -1059,6 +1059,41 @@ hr {
   border-color: var(--ink-faint);
 }
 
+/* Prev/next controls, pinned to the vertical centre of each side. */
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 50%;
+  background: rgba(10, 10, 10, 0.6);
+  color: var(--ink);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.lightbox-nav:hover {
+  background: var(--panel);
+  border-color: var(--ink-faint);
+}
+
+.lightbox-prev {
+  left: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+.lightbox-next {
+  right: clamp(0.75rem, 2vw, 1.5rem);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .lightbox,
   .lightbox img {
