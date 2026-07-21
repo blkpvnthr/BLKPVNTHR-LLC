@@ -31,9 +31,19 @@ if find site -type f \( -name '*.pdf' -o -name '*.xlsx' -o -name '*.csv' \) | gr
   exit 1
 fi
 
+# ── Stage a publish copy and cache-bust it ───────────────────────────────────
+# Content-hash query strings are added to a throwaway copy so the committed HTML
+# stays hash-free (format:check / validate.mjs run on the clean source). A
+# redeploy then reaches returning visitors immediately: HTML is revalidated on
+# every visit and now carries fresh ?v= hashes, forcing new asset fetches.
+STAGE="$(mktemp -d)"
+trap 'rm -rf "${STAGE}"' EXIT
+cp -R site/. "${STAGE}/"
+node scripts/cache-bust.mjs "${STAGE}"
+
 echo ">> Packaging site/ (no macOS resource-fork files)"
-COPYFILE_DISABLE=1 tar --no-mac-metadata -czf /tmp/blkpvnthr-www.tgz -C site . 2>/dev/null \
-  || COPYFILE_DISABLE=1 tar -czf /tmp/blkpvnthr-www.tgz -C site .
+COPYFILE_DISABLE=1 tar --no-mac-metadata -czf /tmp/blkpvnthr-www.tgz -C "${STAGE}" . 2>/dev/null \
+  || COPYFILE_DISABLE=1 tar -czf /tmp/blkpvnthr-www.tgz -C "${STAGE}" .
 
 echo ">> Uploading + atomic release swap on ${VM}"
 scp -i "${KEY}" /tmp/blkpvnthr-www.tgz "ubuntu@${VM}:/tmp/blkpvnthr-www.tgz"
