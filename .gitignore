@@ -1,0 +1,25 @@
+# ---------------------------------------------------------------------------
+# Private corporate records. These must never be committed: this repository is
+# public, and anything committed here is also served at blkpvnthr.com.
+# ---------------------------------------------------------------------------
+docs/
+*.pdf
+*.xlsx
+*.csv
+
+# Dependencies and build output
+node_modules/
+.vercel/
+dist/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/

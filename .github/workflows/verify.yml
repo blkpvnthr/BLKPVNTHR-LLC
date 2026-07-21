@@ -1,0 +1,42 @@
+name: Verify
+
+# The site deploys from a workstation (deploy/deploy.sh → Oracle VM), so this
+# workflow does not publish. It runs the same checks the deploy script runs, as
+# a safety net: a fabricated claim, a broken link, or a private document must
+# never reach main.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dev dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Validate metadata, links, accessibility, and claim safety
+        run: npm run validate
+
+      - name: Guard against publishing private records
+        run: |
+          if find site -type f \( -name '*.pdf' -o -name '*.xlsx' -o -name '*.csv' \) | grep -q .; then
+            echo "::error::Document files found in site/ — these would be published publicly."
+            exit 1
+          fi

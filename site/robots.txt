@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://blkpvnthr.com/sitemap.xml
