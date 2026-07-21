@@ -965,6 +965,22 @@ hr {
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s var(--ease);
+}
+
+/* The frame clips (overflow: hidden), so the still zooms within its border on
+   hover rather than spilling past it. */
+.os-brain .card:hover .card-media img {
+  transform: scale(1.06);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .os-brain .card-media img {
+    transition: none;
+  }
+  .os-brain .card:hover .card-media img {
+    transform: none;
+  }
 }
 
 /* The Nodes still is portrait with its file label near the top; top-align the
