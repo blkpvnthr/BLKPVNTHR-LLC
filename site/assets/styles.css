@@ -926,43 +926,37 @@ hr {
   border-top: 1px solid var(--line);
 }
 
-/* Intro text sits left, the live graph iframe fills the space to its right;
-   the three ruled cards run full-width beneath. */
-.os-brain-top {
-  display: grid;
-  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-  gap: clamp(1.5rem, 4vw, 3rem);
-  align-items: center;
+.os-brain .lead {
+  max-width: 65ch;
   margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
-.os-brain-intro .lead {
-  max-width: 46ch;
-  margin-bottom: 0;
-}
-
-.os-brain-viz {
+/* Each explainer card leads with a framed still of the Brain it describes.
+   Uniform 4:3 crop over pure black so the three read as a set regardless of the
+   source screenshots' native aspect ratios. */
+.os-brain .card-media {
   position: relative;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 0.5rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background: var(--panel);
-  aspect-ratio: 16 / 10;
+  background: #000;
 }
 
-.os-brain-viz iframe {
+.os-brain .card-media img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  border: 0;
+  object-fit: cover;
   display: block;
 }
 
-@media (max-width: 860px) {
-  .os-brain-top {
-    grid-template-columns: 1fr;
-  }
+/* The Nodes still is portrait with its file label near the top; top-align the
+   crop so the "…​.pdf" label — the clearest node-is-a-file cue — is kept. */
+.os-brain .card:first-child .card-media img {
+  object-position: center top;
 }
 
 /* --------------------------------------------------------------------------
