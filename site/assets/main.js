@@ -493,6 +493,9 @@
     document.body.appendChild(overlay);
 
     var index = -1; // which still is currently shown
+    var timer = null; // autoplay interval handle
+    var hovering = false; // pointer resting on the image pauses autoplay
+    var AUTOPLAY_MS = 4500;
 
     function render(i) {
       var still = stills[i];
@@ -502,6 +505,23 @@
         'aria-label',
         (full.alt || 'Enlarged image') + ' (' + (i + 1) + ' of ' + stills.length + ')'
       );
+    }
+
+    function stopAuto() {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    }
+
+    // Auto-advance the gallery once expanded. Skipped for a single still, under
+    // reduced-motion, or while the pointer rests on the image.
+    function startAuto() {
+      stopAuto();
+      if (prefersReducedMotion || !many || overlay.hidden || hovering) return;
+      timer = setInterval(function () {
+        navigate(1);
+      }, AUTOPLAY_MS);
     }
 
     function open(still) {
@@ -515,6 +535,7 @@
       void overlay.offsetWidth;
       overlay.classList.add('is-open');
       (many ? next : close).focus();
+      startAuto(); // gallery navigation begins on expand
     }
 
     // Cycle through every still; wraps at both ends.
@@ -526,17 +547,30 @@
 
     function dismiss() {
       if (overlay.hidden) return;
+      stopAuto();
+      hovering = false;
       overlay.classList.remove('is-open');
       document.body.style.overflow = '';
       // Return focus to the still currently shown, not just the one first opened.
       var restore = stills[index];
+      var done = false;
+      var fallback = null;
       var finish = function () {
+        if (done) return;
+        done = true;
+        if (fallback) clearTimeout(fallback);
         overlay.hidden = true;
         full.removeAttribute('src');
         overlay.removeEventListener('transitionend', finish);
       };
-      if (prefersReducedMotion) finish();
-      else overlay.addEventListener('transitionend', finish);
+      if (prefersReducedMotion) {
+        finish();
+      } else {
+        overlay.addEventListener('transitionend', finish);
+        // transitionend never fires on a backgrounded tab (paint is throttled),
+        // so guarantee the overlay finishes hiding regardless.
+        fallback = setTimeout(finish, 500);
+      }
       if (restore) restore.focus();
     }
 
@@ -559,19 +593,35 @@
       });
     });
 
+    // A manual step restarts the autoplay countdown so the next auto-advance is
+    // a full interval away, not whatever was left on the clock.
+    function step(delta) {
+      navigate(delta);
+      startAuto();
+    }
+
     // Clicking the backdrop (the dead space around the contain-fit image) closes;
     // clicks on the image or controls are handled on their own and don't bubble.
     overlay.addEventListener('click', dismiss);
     full.addEventListener('click', function (event) {
       event.stopPropagation();
     });
+    // Resting the pointer on the image pauses the slideshow; leaving resumes it.
+    full.addEventListener('mouseenter', function () {
+      hovering = true;
+      stopAuto();
+    });
+    full.addEventListener('mouseleave', function () {
+      hovering = false;
+      startAuto();
+    });
     prev.addEventListener('click', function (event) {
       event.stopPropagation();
-      navigate(-1);
+      step(-1);
     });
     next.addEventListener('click', function (event) {
       event.stopPropagation();
-      navigate(1);
+      step(1);
     });
     close.addEventListener('click', function (event) {
       event.stopPropagation();
@@ -581,8 +631,8 @@
     document.addEventListener('keydown', function (event) {
       if (overlay.hidden) return;
       if (event.key === 'Escape') dismiss();
-      else if (event.key === 'ArrowLeft') navigate(-1);
-      else if (event.key === 'ArrowRight') navigate(1);
+      else if (event.key === 'ArrowLeft') step(-1);
+      else if (event.key === 'ArrowRight') step(1);
     });
   })();
 })();
