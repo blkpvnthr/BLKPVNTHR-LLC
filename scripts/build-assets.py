@@ -2,10 +2,10 @@
 """
 Generate the BLKPVNTHR LLC logo and social-sharing assets.
 
-Source mark: the BLKPVNTHR panther head (`scripts/brand-panther.png`), a dark
-silhouette on transparency. It is recoloured to white here — the transparent
-cut-outs (eye, mouth) are preserved, so on a dark surface the panther reads
-white with the surface showing through the negative space.
+Two source marks, both dark silhouettes on transparency, recoloured to white so
+they read on the dark site surfaces (cut-outs are preserved as negative space):
+  - `scripts/brand-logo.png`     → the header/footer/OG logo
+  - `scripts/brand-panther.png`  → the favicon (front-facing head on a dark tile)
 
 Text on the OG card is set in Helvetica Neue, the declared fallback for both
 Sora and Inter in the site stylesheet, so the card stays consistent with the
@@ -27,7 +27,9 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "site" / "assets"
-SOURCE_MARK = ROOT / "scripts" / "brand-panther.png"
+# Favicon and logo are intentionally different marks.
+FAVICON_SOURCE = ROOT / "scripts" / "brand-panther.png"
+LOGO_SOURCE = ROOT / "scripts" / "brand-logo.png"
 
 BG = (10, 10, 10, 255)          # --bg
 WHITE = (255, 255, 255, 255)    # the mark colour (requested)
@@ -45,11 +47,12 @@ def font(size: int, index: int = 0) -> ImageFont.FreeTypeFont:
     return ImageFont.truetype(HELVETICA, size, index=index)
 
 
-def recolour_mark(size: int, colour=WHITE) -> Image.Image:
-    """Recolour the source silhouette to `colour` and return it centred in a
-    transparent square. The source is first cropped to its non-transparent
-    content and scaled to fit, so a non-square source is never distorted."""
-    src = Image.open(SOURCE_MARK).convert("RGBA")
+def recolour_mark(size: int, colour=WHITE, source=None) -> Image.Image:
+    """Recolour `source` (default: the logo mark) to `colour` and return it
+    centred in a transparent square. The source is first cropped to its
+    non-transparent content and scaled to fit, so a non-square source is never
+    distorted."""
+    src = Image.open(source or LOGO_SOURCE).convert("RGBA")
     bbox = src.split()[3].getbbox()
     if bbox:
         src = src.crop(bbox)
@@ -77,7 +80,7 @@ def rounded_icon(size: int, radius_ratio: float = 0.18, inset_ratio: float = 0.1
     )
 
     inset = int(big * inset_ratio)
-    mark = recolour_mark(big - inset * 2)
+    mark = recolour_mark(big - inset * 2, source=FAVICON_SOURCE)
     tile.alpha_composite(mark, (inset, inset))
 
     return tile.resize((size, size), Image.LANCZOS)
@@ -155,8 +158,9 @@ def og_card() -> Image.Image:
 
 
 def main() -> None:
-    if not SOURCE_MARK.exists():
-        raise SystemExit(f"source mark not found: {SOURCE_MARK}")
+    for src in (FAVICON_SOURCE, LOGO_SOURCE):
+        if not src.exists():
+            raise SystemExit(f"source not found: {src}")
 
     ASSETS.mkdir(parents=True, exist_ok=True)
 
