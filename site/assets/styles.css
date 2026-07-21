@@ -931,6 +931,18 @@ hr {
   margin-bottom: clamp(2rem, 4vw, 3rem);
 }
 
+.os-brain-cta {
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.os-brain-cta .arrow {
+  transition: transform var(--dur) var(--ease);
+}
+
+.os-brain-cta .btn:hover .arrow {
+  transform: translateX(3px);
+}
+
 /* Each explainer card leads with a framed still of the Brain it describes.
    Uniform 4:3 crop over pure black so the three read as a set regardless of the
    source screenshots' native aspect ratios. */
