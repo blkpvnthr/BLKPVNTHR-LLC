@@ -917,6 +917,20 @@ hr {
   line-height: 1.7;
 }
 
+/* The Brain explainer sits under the products grid, separated by a hairline and
+   section-scale space so it reads as a deep-dive on the flagship product rather
+   than a fourth product card. Its .lead is width-capped for readability. */
+.os-brain {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  padding-top: clamp(3rem, 6vw, 5rem);
+  border-top: 1px solid var(--line);
+}
+
+.os-brain .lead {
+  max-width: 60ch;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
 /* --------------------------------------------------------------------------
    10. Product lines
    -------------------------------------------------------------------------- */
