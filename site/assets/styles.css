@@ -933,6 +933,8 @@ hr {
 
 .os-brain-cta {
   margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  display: flex;
+  justify-content: flex-end;
 }
 
 .os-brain-cta .arrow {
