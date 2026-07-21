@@ -444,4 +444,102 @@
       if (active) hide(active);
     });
   })();
+
+  /* ---------------------------------------------------------------------
+     Brain explainer lightbox
+
+     Clicking (or activating via keyboard) any explainer still opens it
+     full-screen in a shared overlay. The overlay is built once and appended
+     to <body>; a click on the backdrop or close button, or Escape, dismisses
+     it and returns focus to the still that opened it.
+     --------------------------------------------------------------------- */
+  (function initBrainLightbox() {
+    var stills = Array.prototype.slice.call(
+      document.querySelectorAll('.os-brain .card-media img[data-full]')
+    );
+    if (!stills.length) return;
+
+    var overlay = document.createElement('div');
+    overlay.className = 'lightbox';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.hidden = true;
+
+    var full = document.createElement('img');
+    full.className = 'lightbox-image';
+    full.alt = '';
+
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'lightbox-close';
+    close.setAttribute('aria-label', 'Close');
+    close.innerHTML = '✕';
+
+    overlay.appendChild(full);
+    overlay.appendChild(close);
+    document.body.appendChild(overlay);
+
+    var opener = null;
+
+    function open(still) {
+      opener = still;
+      full.src = still.getAttribute('data-full');
+      full.alt = still.getAttribute('alt') || '';
+      overlay.setAttribute('aria-label', full.alt || 'Enlarged image');
+      overlay.hidden = false;
+      document.body.style.overflow = 'hidden';
+      // Commit the hidden state (display/opacity) with a forced reflow so the
+      // fade runs from it — rAF would stall on a backgrounded tab. Focus only
+      // after .is-open, since a visibility:hidden node can't hold focus.
+      void overlay.offsetWidth;
+      overlay.classList.add('is-open');
+      close.focus();
+    }
+
+    function dismiss() {
+      if (overlay.hidden) return;
+      overlay.classList.remove('is-open');
+      document.body.style.overflow = '';
+      var restore = opener;
+      opener = null;
+      var finish = function () {
+        overlay.hidden = true;
+        full.removeAttribute('src');
+        overlay.removeEventListener('transitionend', finish);
+      };
+      if (prefersReducedMotion) finish();
+      else overlay.addEventListener('transitionend', finish);
+      if (restore) restore.focus();
+    }
+
+    stills.forEach(function (still) {
+      // Promote each still to a keyboard-operable control (no-JS users just see
+      // the static image, so these semantics are added here rather than in HTML).
+      still.setAttribute('role', 'button');
+      still.setAttribute('tabindex', '0');
+      var label = still.getAttribute('alt');
+      if (label) still.setAttribute('aria-label', 'Enlarge: ' + label);
+
+      still.addEventListener('click', function () {
+        open(still);
+      });
+      still.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          open(still);
+        }
+      });
+    });
+
+    // A click anywhere on the overlay (backdrop or the image) closes it; the
+    // image is contain-fit with dead space around it, so this reads naturally.
+    overlay.addEventListener('click', dismiss);
+    close.addEventListener('click', function (event) {
+      event.stopPropagation();
+      dismiss();
+    });
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') dismiss();
+    });
+  })();
 })();
