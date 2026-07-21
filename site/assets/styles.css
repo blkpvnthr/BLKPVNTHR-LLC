@@ -990,28 +990,9 @@ hr {
   object-position: center top;
 }
 
-/* Second (placeholder) card row, stacked below the first with a matching gap. */
+/* Second card row (data-flow), stacked below the first with a matching gap. */
 .os-brain-more {
   margin-top: 1px;
-}
-
-/* Empty media frame for not-yet-filled cards: dashed so it clearly reads as a
-   placeholder, with a centred hint and no zoom affordance. */
-.os-brain .card-media--empty {
-  cursor: default;
-  border-style: dashed;
-  border-color: var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.os-brain .card-media--empty .card-media-hint {
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-faint);
 }
 
 /* Fullscreen lightbox — a single overlay reused for whichever still is clicked.
