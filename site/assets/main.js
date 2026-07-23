@@ -1,10 +1,11 @@
 /**
  * BLKPVNTHR LLC — corporate site behaviour.
  *
- * Four independent modules: mobile navigation, the illustrative scenario
- * model, scroll-spy for the primary nav, and a reveal-on-scroll effect.
- * Everything degrades gracefully: with JavaScript disabled the page is still
- * fully readable, the baseline scenario is shown, and all links work.
+ * Independent modules: mobile navigation, the Decision Evidence Trace reveal,
+ * scroll-spy for the primary nav, a reveal-on-scroll effect, a hide-on-scroll
+ * header, and product hover previews. Everything degrades gracefully: with
+ * JavaScript disabled the page is fully readable, the trace shows its complete
+ * static diagram, and all links work.
  */
 (function () {
   'use strict';
@@ -56,115 +57,35 @@
   })();
 
   /* ---------------------------------------------------------------------
-     Illustrative scenario model
+     Decision Evidence Trace
 
-     All figures below are synthetic and exist to demonstrate the shape of a
-     scenario-comparison interface. They are not derived from real program
-     data and must never be presented as results.
+     A conceptual, non-quantitative diagram in the hero. CSS renders the
+     complete static diagram by default; adding .is-traced plays a short,
+     one-shot staged reveal (source -> analysis -> decision -> traceability).
+     Under reduced motion, or without IntersectionObserver, the class is added
+     immediately and the CSS reveal is a no-op — the diagram is simply shown.
      --------------------------------------------------------------------- */
-  (function initScenarioModel() {
-    var tablist = document.querySelector('.model-tabs');
-    if (!tablist) return;
+  (function initEvidenceTrace() {
+    var trace = document.querySelector('.trace');
+    if (!trace) return;
 
-    var SCENARIOS = {
-      baseline: {
-        workforce: '+38%',
-        workforceNote: 'peak, vs. 2026',
-        cost: '$4.2B',
-        costNote: 'net present value',
-        capacity: '6.1 GW',
-        capacityNote: '2040 projection',
-        evidence: '84%',
-        evidenceNote: 'inputs with provenance'
-      },
-      accelerated: {
-        workforce: '+112%',
-        workforceNote: 'peak, vs. 2026',
-        cost: '$7.8B',
-        costNote: 'net present value',
-        capacity: '11.4 GW',
-        capacityNote: '2040 projection',
-        evidence: '71%',
-        evidenceNote: 'inputs with provenance'
-      },
-      constrained: {
-        workforce: '+14%',
-        workforceNote: 'peak, vs. 2026',
-        cost: '$3.1B',
-        costNote: 'net present value',
-        capacity: '3.7 GW',
-        capacityNote: '2040 projection',
-        evidence: '89%',
-        evidenceNote: 'inputs with provenance'
-      }
-    };
-
-    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
-    var panel = document.getElementById('scenario-panel');
-
-    // Only write when the value actually changes. The four note strings are
-    // identical across scenarios, and rewriting them would re-fire the live
-    // region on every arrow key with nothing new to announce.
-    function setMetric(name, value) {
-      var node = document.querySelector('[data-metric="' + name + '"]');
-      if (node && node.textContent !== value) node.textContent = value;
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      trace.classList.add('is-traced');
+      return;
     }
 
-    function select(scenario, focusTab) {
-      var data = SCENARIOS[scenario];
-      if (!data) return;
+    var observer = new IntersectionObserver(
+      function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-traced');
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: '0px 0px -12% 0px', threshold: 0.25 }
+    );
 
-      tabs.forEach(function (tab) {
-        var selected = tab.dataset.scenario === scenario;
-        tab.setAttribute('aria-selected', String(selected));
-        tab.tabIndex = selected ? 0 : -1;
-        if (selected && focusTab) tab.focus();
-        if (selected && panel) panel.setAttribute('aria-labelledby', tab.id);
-      });
-
-      document.querySelectorAll('[data-series]').forEach(function (path) {
-        path.classList.toggle('is-active', path.dataset.series === scenario);
-      });
-      document.querySelectorAll('[data-fill]').forEach(function (path) {
-        path.classList.toggle('is-active', path.dataset.fill === scenario);
-      });
-      document.querySelectorAll('[data-legend]').forEach(function (item) {
-        item.classList.toggle('is-active', item.dataset.legend === scenario);
-      });
-
-      setMetric('workforce', data.workforce);
-      setMetric('workforce-note', data.workforceNote);
-      setMetric('cost', data.cost);
-      setMetric('cost-note', data.costNote);
-      setMetric('capacity', data.capacity);
-      setMetric('capacity-note', data.capacityNote);
-      setMetric('evidence', data.evidence);
-      setMetric('evidence-note', data.evidenceNote);
-    }
-
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () {
-        select(tab.dataset.scenario, false);
-      });
-    });
-
-    // Standard WAI-ARIA tablist keyboard interaction.
-    tablist.addEventListener('keydown', function (event) {
-      var index = tabs.indexOf(document.activeElement);
-      if (index === -1) return;
-
-      var next = null;
-      if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % tabs.length;
-      else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp')
-        next = (index - 1 + tabs.length) % tabs.length;
-      else if (event.key === 'Home') next = 0;
-      else if (event.key === 'End') next = tabs.length - 1;
-
-      if (next !== null) {
-        event.preventDefault();
-        select(tabs[next].dataset.scenario, true);
-      }
-    });
+    observer.observe(trace);
   })();
 
   /* ---------------------------------------------------------------------
@@ -442,207 +363,6 @@
     );
     window.addEventListener('resize', function () {
       if (active) hide(active);
-    });
-  })();
-
-  /* ---------------------------------------------------------------------
-     Brain explainer lightbox
-
-     Clicking (or activating via keyboard) any explainer still opens it
-     full-screen in a shared overlay. The overlay is built once and appended
-     to <body>; a click on the backdrop or close button, or Escape, dismisses
-     it and returns focus to the still that opened it.
-     --------------------------------------------------------------------- */
-  (function initBrainLightbox() {
-    // Every expandable still in the Brain section — the six explainer cards
-    // plus the featured terminal shot — in DOM order, so the gallery cycles
-    // through all of them.
-    var stills = Array.prototype.slice.call(document.querySelectorAll('.os-brain img[data-full]'));
-    if (!stills.length) return;
-
-    var overlay = document.createElement('div');
-    overlay.className = 'lightbox';
-    overlay.setAttribute('role', 'dialog');
-    overlay.setAttribute('aria-modal', 'true');
-    overlay.hidden = true;
-
-    var full = document.createElement('img');
-    full.className = 'lightbox-image';
-    full.alt = '';
-
-    function makeButton(cls, label, glyph) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = cls;
-      b.setAttribute('aria-label', label);
-      b.innerHTML = glyph;
-      return b;
-    }
-
-    // Optional per-still hint (set via data-note), shown muted under the image.
-    var note = document.createElement('p');
-    note.className = 'lightbox-note';
-    note.hidden = true;
-
-    var prev = makeButton('lightbox-nav lightbox-prev', 'Previous image', '‹');
-    var next = makeButton('lightbox-nav lightbox-next', 'Next image', '›');
-    var close = makeButton('lightbox-close', 'Close', '✕');
-
-    // Single stills can skip the prev/next controls entirely.
-    var many = stills.length > 1;
-    overlay.appendChild(full);
-    overlay.appendChild(note);
-    if (many) {
-      overlay.appendChild(prev);
-      overlay.appendChild(next);
-    }
-    overlay.appendChild(close);
-    document.body.appendChild(overlay);
-
-    var index = -1; // which still is currently shown
-    var timer = null; // autoplay interval handle
-    var hovering = false; // pointer resting on the image pauses autoplay
-    var AUTOPLAY_MS = 4500;
-
-    function render(i) {
-      var still = stills[i];
-      full.src = still.getAttribute('data-full');
-      full.alt = still.getAttribute('alt') || '';
-      overlay.setAttribute(
-        'aria-label',
-        (full.alt || 'Enlarged image') + ' (' + (i + 1) + ' of ' + stills.length + ')'
-      );
-      var hint = still.getAttribute('data-note');
-      note.textContent = hint || '';
-      note.hidden = !hint;
-    }
-
-    function stopAuto() {
-      if (timer) {
-        clearInterval(timer);
-        timer = null;
-      }
-    }
-
-    // Auto-advance the gallery once expanded. Skipped for a single still, under
-    // reduced-motion, or while the pointer rests on the image.
-    function startAuto() {
-      stopAuto();
-      if (prefersReducedMotion || !many || overlay.hidden || hovering) return;
-      timer = setInterval(function () {
-        navigate(1);
-      }, AUTOPLAY_MS);
-    }
-
-    function open(still) {
-      index = stills.indexOf(still);
-      render(index);
-      overlay.hidden = false;
-      document.body.style.overflow = 'hidden';
-      // Commit the hidden state (display/opacity) with a forced reflow so the
-      // fade runs from it — rAF would stall on a backgrounded tab. Focus only
-      // after .is-open, since a visibility:hidden node can't hold focus.
-      void overlay.offsetWidth;
-      overlay.classList.add('is-open');
-      (many ? next : close).focus();
-      startAuto(); // gallery navigation begins on expand
-    }
-
-    // Cycle through every still; wraps at both ends.
-    function navigate(delta) {
-      if (overlay.hidden || !many) return;
-      index = (index + delta + stills.length) % stills.length;
-      render(index);
-    }
-
-    function dismiss() {
-      if (overlay.hidden) return;
-      stopAuto();
-      hovering = false;
-      overlay.classList.remove('is-open');
-      document.body.style.overflow = '';
-      // Return focus to the still currently shown, not just the one first opened.
-      var restore = stills[index];
-      var done = false;
-      var fallback = null;
-      var finish = function () {
-        if (done) return;
-        done = true;
-        if (fallback) clearTimeout(fallback);
-        overlay.hidden = true;
-        full.removeAttribute('src');
-        overlay.removeEventListener('transitionend', finish);
-      };
-      if (prefersReducedMotion) {
-        finish();
-      } else {
-        overlay.addEventListener('transitionend', finish);
-        // transitionend never fires on a backgrounded tab (paint is throttled),
-        // so guarantee the overlay finishes hiding regardless.
-        fallback = setTimeout(finish, 500);
-      }
-      if (restore) restore.focus();
-    }
-
-    stills.forEach(function (still) {
-      // Promote each still to a keyboard-operable control (no-JS users just see
-      // the static image, so these semantics are added here rather than in HTML).
-      still.setAttribute('role', 'button');
-      still.setAttribute('tabindex', '0');
-      var label = still.getAttribute('alt');
-      if (label) still.setAttribute('aria-label', 'Enlarge: ' + label);
-
-      still.addEventListener('click', function () {
-        open(still);
-      });
-      still.addEventListener('keydown', function (event) {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          open(still);
-        }
-      });
-    });
-
-    // A manual step restarts the autoplay countdown so the next auto-advance is
-    // a full interval away, not whatever was left on the clock.
-    function step(delta) {
-      navigate(delta);
-      startAuto();
-    }
-
-    // Clicking the backdrop (the dead space around the contain-fit image) closes;
-    // clicks on the image or controls are handled on their own and don't bubble.
-    overlay.addEventListener('click', dismiss);
-    full.addEventListener('click', function (event) {
-      event.stopPropagation();
-    });
-    // Resting the pointer on the image pauses the slideshow; leaving resumes it.
-    full.addEventListener('mouseenter', function () {
-      hovering = true;
-      stopAuto();
-    });
-    full.addEventListener('mouseleave', function () {
-      hovering = false;
-      startAuto();
-    });
-    prev.addEventListener('click', function (event) {
-      event.stopPropagation();
-      step(-1);
-    });
-    next.addEventListener('click', function (event) {
-      event.stopPropagation();
-      step(1);
-    });
-    close.addEventListener('click', function (event) {
-      event.stopPropagation();
-      dismiss();
-    });
-
-    document.addEventListener('keydown', function (event) {
-      if (overlay.hidden) return;
-      if (event.key === 'Escape') dismiss();
-      else if (event.key === 'ArrowLeft') step(-1);
-      else if (event.key === 'ArrowRight') step(1);
     });
   })();
 })();

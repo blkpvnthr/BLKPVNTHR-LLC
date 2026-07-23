@@ -273,12 +273,10 @@ for (const file of [...htmlFiles, ...all.filter((f) => f.endsWith('.js'))]) {
   }
 }
 
-// The exploratory notice is mandatory and must stay intact.
+// The licensing disclaimer is mandatory and must stay intact.
 const index = readFileSync(join(SITE, 'index.html'), 'utf8').replace(/\s+/g, ' ');
 const REQUIRED_COPY = [
-  'has not licensed ReactorCast and is not affiliated with or endorsed by Los Alamos National Laboratory or the U.S. Department of Energy',
-  'is evaluating ReactorCast',
-  'Illustrative system model'
+  'has not licensed ReactorCast and is not affiliated with or endorsed by Los Alamos National Laboratory or the U.S. Department of Energy'
 ];
 for (const phrase of REQUIRED_COPY) {
   if (!index.includes(phrase)) fail('index.html', `required disclosure copy missing: "${phrase}"`);

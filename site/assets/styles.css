@@ -167,10 +167,8 @@ hr {
   outline: none;
 }
 
-/* .model and .faq clip to their rounded corners, which would slice the left and
-   right edges off an outward ring on their full-bleed children. Draw it inward. */
-.model-tab:focus-visible,
-#scenario-panel:focus-visible,
+/* .faq clips to its rounded corners, which would slice the left and right edges
+   off an outward ring on its full-bleed summary rows. Draw it inward. */
 .faq summary:focus-visible {
   outline-offset: -3px;
 }
@@ -568,18 +566,23 @@ hr {
 }
 
 /* --------------------------------------------------------------------------
-   7. Scenario model panel (hero right)
-   Illustrative only. Values are synthetic and labelled as such in the markup.
+   7. Decision Evidence Trace (hero right)
+
+   A conceptual system diagram — no data, statistics, or product screenshot.
+   Source evidence flows to an analytical layer to a decision output, over a
+   traceability panel. The single accent marks functional signal only: the
+   provenance rail, the layer nodes, the traceability ticks, and the
+   "Traceable" status.
    -------------------------------------------------------------------------- */
 
-.model {
+.trace {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--panel);
   overflow: hidden;
 }
 
-.model-bar {
+.trace-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -589,7 +592,7 @@ hr {
   background: var(--panel-2);
 }
 
-.model-label {
+.trace-label {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   text-transform: uppercase;
@@ -597,7 +600,7 @@ hr {
   color: var(--ink-faint);
 }
 
-.model-tag {
+.trace-tag {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: 0.08em;
@@ -608,223 +611,238 @@ hr {
   white-space: nowrap;
 }
 
-/* Scenario selector — an ARIA tablist, fully keyboard driven. */
-.model-tabs {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-bottom: 1px solid var(--line);
-}
-
-.model-tab {
-  padding: 0.8125rem 0.5rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ink-faint);
-  border-right: 1px solid var(--line);
-  transition:
-    color var(--dur) var(--ease),
-    background-color var(--dur) var(--ease);
+/* The three layers, strung along a vertical provenance rail on the left. */
+.trace-body {
   position: relative;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
 }
 
-.model-tab:last-child {
-  border-right: none;
+/* Provenance rail: a hairline the layer nodes sit on. Its accent segment
+   grows over it as the trace animates in; full height when static. */
+.trace-rail {
+  position: absolute;
+  top: 1.75rem;
+  bottom: 1.75rem;
+  left: calc(1.25rem + 5px);
+  width: 2px;
+  background: var(--line-strong);
 }
 
-.model-tab:hover {
-  color: var(--ink-muted);
-  background: var(--panel-2);
-}
-
-.model-tab[aria-selected='true'] {
-  color: var(--ink);
-  background: var(--panel-2);
-}
-
-.model-tab[aria-selected='true']::after {
+.trace-rail::after {
   content: '';
   position: absolute;
-  inset: auto 0 0 0;
-  height: 2px;
-  background: var(--accent);
+  inset: 0;
+  background: linear-gradient(var(--accent), var(--accent-line));
+  transform-origin: top;
 }
 
-.model-body {
-  padding: 1.25rem 1rem 1rem;
-}
-
-.model-chart {
+.trace-layer {
   position: relative;
+  padding-left: 1.75rem;
 }
 
-.model-chart svg {
-  width: 100%;
-  height: auto;
-  display: block;
-  overflow: visible;
-}
-
-.chart-grid line {
-  stroke: var(--line-faint);
-  stroke-width: 1;
-  vector-effect: non-scaling-stroke;
-}
-
-/* Sized in SVG user units, so the rendered size tracks the panel width. The
-   larger value keeps the axis legible once the panel narrows on small screens. */
-.chart-axis text {
-  font-family: var(--font-mono);
-  font-size: 9px;
-  fill: var(--ink-faint);
-  letter-spacing: 0.06em;
-}
-
-@media (min-width: 721px) {
-  .chart-axis text {
-    font-size: 7px;
-  }
-}
-
-/* Inactive comparison series stay gray; only the selected scenario takes the
-   accent. They still carry meaning, so they hold the 3:1 non-text contrast
-   minimum rather than fading to decoration. */
-.series {
-  fill: none;
-  stroke-width: 1.5;
-  vector-effect: non-scaling-stroke;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke: var(--ink-muted);
-  opacity: 0.75;
-  transition:
-    opacity var(--dur) var(--ease),
-    stroke var(--dur) var(--ease);
-}
-
-.series.is-active {
-  stroke: var(--accent);
-  opacity: 1;
-  stroke-width: 2;
-}
-
-.series-fill {
-  fill: var(--accent-dim);
-  opacity: 0;
-  transition: opacity var(--dur) var(--ease);
-}
-
-.series-fill.is-active {
-  opacity: 1;
-}
-
-.model-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.875rem;
-  margin-top: 0.875rem;
-  padding-top: 0.875rem;
-  border-top: 1px solid var(--line);
-}
-
-.legend-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4375rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  color: var(--ink-faint);
-}
-
-.legend-swatch {
-  width: 12px;
-  height: 2px;
-  background: var(--ink-muted);
-  flex: none;
-}
-
-.legend-item.is-active {
-  color: var(--ink);
-}
-
-.legend-item.is-active .legend-swatch {
-  background: var(--accent);
-}
-
-/* Metric readout grid */
-.model-metrics {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  border-top: 1px solid var(--line);
-}
-
-.metric {
-  padding: 0.875rem 1rem;
-  border-right: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-}
-
-.metric:nth-child(2n) {
-  border-right: none;
-}
-
-.metric:nth-last-child(-n + 2) {
-  border-bottom: none;
-}
-
-.metric-label {
+.trace-layer-label {
+  margin-bottom: 0.75rem;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--ink-faint);
-  margin-bottom: 0.375rem;
+  letter-spacing: 0.12em;
+  color: var(--ink-muted);
 }
 
-.metric-value {
-  font-family: var(--font-display);
-  font-size: var(--text-xl);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
+/* Node dot, centred on the rail (accent ring on the panel surface). */
+.trace-node {
+  position: absolute;
+  left: 0;
+  top: 0.15rem;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--panel);
+  border: 2px solid var(--accent);
+  box-sizing: content-box;
 }
 
-.metric-delta {
+.trace-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4375rem;
+}
+
+.trace-chips li {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
-  color: var(--ink-faint);
-  margin-top: 0.125rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-muted);
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.3125rem 0.5625rem;
 }
 
-/* Provenance strip — communicates that outputs carry evidence status. */
-.model-foot {
+/* Decision output rows — a small ruled sheet, like the card grids. */
+.trace-out {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.trace-out li {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  flex-wrap: wrap;
-  padding: 0.75rem 1rem;
+  background: var(--bg);
+  padding: 0.625rem 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--ink);
+}
+
+.trace-status {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius);
+  padding: 0.125rem 0.4375rem;
+  white-space: nowrap;
+}
+
+/* Traceability panel. */
+.trace-foot {
+  padding: 0.875rem 1rem;
   border-top: 1px solid var(--line);
   background: var(--panel-2);
 }
 
-.provenance {
-  display: inline-flex;
+.trace-foot-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+  margin-bottom: 0.625rem;
+}
+
+.trace-checks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.375rem 1rem;
+}
+
+.trace-checks li {
+  display: flex;
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
+  letter-spacing: 0.04em;
   color: var(--ink-faint);
-  letter-spacing: 0.06em;
 }
 
-.provenance-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
+/* A small accent check mark. */
+.trace-checks li::before {
+  content: '';
+  width: 0.5rem;
+  height: 0.3125rem;
+  border-left: 1.5px solid var(--accent);
+  border-bottom: 1.5px solid var(--accent);
+  transform: rotate(-45deg) translateY(-1px);
   flex: none;
+}
+
+/* Supporting line under the visual. */
+.hero-caption {
+  margin-top: 1rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.6;
+  color: var(--ink-faint);
+}
+
+/* ---- Staged reveal (progressive enhancement) ----
+   With .js, the layers, the rail's accent segment, the status, and the
+   traceability ticks start collapsed and play a short sequence once the trace
+   scrolls into view (main.js adds .is-traced). If main.js never loads the
+   head-script fallback drops the .js gate; under reduced motion the sequence
+   is skipped. Every path resolves to the complete, static diagram. */
+.js .trace .trace-layer,
+.js .trace .trace-status,
+.js .trace .trace-checks li {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease);
+}
+
+.js .trace .trace-rail::after {
+  transform: scaleY(0);
+  transition: transform 0.6s var(--ease);
+}
+
+.js .trace.is-traced .trace-layer,
+.js .trace.is-traced .trace-status,
+.js .trace.is-traced .trace-checks li {
+  opacity: 1;
+  transform: none;
+}
+
+.js .trace.is-traced .trace-rail::after {
+  transform: scaleY(1);
+}
+
+/* Sequence: source, then the rail draws down, then analysis, decision, the
+   traceable status, and finally the traceability ticks. */
+.js .trace.is-traced .trace-layer[data-layer='source'] {
+  transition-delay: 0.05s;
+}
+.js .trace.is-traced .trace-rail::after {
+  transition-delay: 0.25s;
+}
+.js .trace.is-traced .trace-layer[data-layer='analysis'] {
+  transition-delay: 0.45s;
+}
+.js .trace.is-traced .trace-layer[data-layer='decision'] {
+  transition-delay: 0.75s;
+}
+.js .trace.is-traced .trace-status {
+  transition-delay: 1.05s;
+}
+.js .trace.is-traced .trace-checks li:nth-child(1) {
+  transition-delay: 1.2s;
+}
+.js .trace.is-traced .trace-checks li:nth-child(2) {
+  transition-delay: 1.3s;
+}
+.js .trace.is-traced .trace-checks li:nth-child(3) {
+  transition-delay: 1.4s;
+}
+.js .trace.is-traced .trace-checks li:nth-child(4) {
+  transition-delay: 1.5s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js .trace .trace-layer,
+  .js .trace .trace-status,
+  .js .trace .trace-checks li {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .js .trace .trace-rail::after {
+    transform: none;
+    transition: none;
+  }
 }
 
 /* --------------------------------------------------------------------------
@@ -915,269 +933,6 @@ hr {
   color: var(--ink-muted);
   font-size: var(--text-sm);
   line-height: 1.7;
-}
-
-/* The Brain explainer sits under the products grid, separated by a hairline and
-   section-scale space so it reads as a deep-dive on the flagship product rather
-   than a fourth product card. Its .lead is width-capped for readability. */
-.os-brain {
-  margin-top: clamp(3rem, 6vw, 5rem);
-  padding-top: clamp(3rem, 6vw, 5rem);
-  border-top: 1px solid var(--line);
-}
-
-.os-brain .lead {
-  max-width: 65ch;
-  margin-bottom: clamp(2rem, 4vw, 3rem);
-}
-
-.os-brain-cta {
-  margin-top: clamp(1.75rem, 3vw, 2.5rem);
-  display: flex;
-  justify-content: flex-end;
-}
-
-.os-brain-cta .arrow {
-  transition: transform var(--dur) var(--ease);
-}
-
-.os-brain-cta .btn:hover .arrow {
-  transform: translateX(3px);
-}
-
-/* Each explainer card leads with a framed still of the Brain it describes.
-   Uniform 4:3 crop over pure black so the three read as a set regardless of the
-   source screenshots' native aspect ratios. */
-.os-brain .card-media {
-  position: relative;
-  aspect-ratio: 4 / 3;
-  margin-bottom: 0.5rem;
-  border: 1px solid var(--line-faint);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: #000;
-  cursor: zoom-in;
-}
-
-.os-brain .card-media img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.5s var(--ease);
-}
-
-/* The frame clips (overflow: hidden), so the still zooms within its border on
-   hover rather than spilling past it. */
-.os-brain .card:hover .card-media img {
-  transform: scale(1.06);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .os-brain .card-media img {
-    transition: none;
-  }
-  .os-brain .card:hover .card-media img {
-    transform: none;
-  }
-}
-
-/* The Nodes still is portrait with its file label near the top; top-align the
-   crop so the "…​.pdf" label — the clearest node-is-a-file cue — is kept. */
-.os-brain .card:first-child .card-media img {
-  object-position: center top;
-}
-
-/* Second card row (data-flow), stacked below the first with a matching gap. */
-.os-brain-more {
-  margin-top: 1px;
-}
-
-/* Featured terminal-navigation showcase: a constrained copy block above a
-   full-width, click-to-expand screenshot of the OS command line. */
-.os-terminal {
-  margin-top: clamp(2.5rem, 5vw, 4rem);
-}
-
-.os-terminal-copy {
-  max-width: 70ch;
-  margin-bottom: clamp(1.25rem, 3vw, 2rem);
-}
-
-.os-terminal-copy .card-title {
-  margin-top: 0.25rem;
-}
-
-.os-terminal-copy .card-body {
-  margin-top: 0.75rem;
-}
-
-.os-terminal-copy code {
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  color: var(--ink);
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 0.1em 0.4em;
-}
-
-.os-terminal-shot {
-  position: relative;
-  border: 1px solid var(--line-faint);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: #000;
-  cursor: zoom-in;
-}
-
-.os-terminal-shot img {
-  display: block;
-  width: 100%;
-  height: auto;
-  transition: transform 0.5s var(--ease);
-}
-
-.os-terminal-shot:hover img {
-  transform: scale(1.02);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .os-terminal-shot img {
-    transition: none;
-  }
-  .os-terminal-shot:hover img {
-    transform: none;
-  }
-}
-
-/* Fullscreen lightbox — a single overlay reused for whichever still is clicked.
-   Hidden from layout and AT until opened; JS toggles .is-open. */
-.lightbox {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: clamp(1rem, 4vw, 3rem);
-  background: rgba(0, 0, 0, 0.9);
-  opacity: 0;
-  visibility: hidden;
-  transition:
-    opacity var(--dur) var(--ease),
-    visibility var(--dur) var(--ease);
-  cursor: zoom-out;
-}
-
-.lightbox.is-open {
-  opacity: 1;
-  visibility: visible;
-}
-
-.lightbox img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  border-radius: var(--radius-lg);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
-  transform: scale(0.98);
-  transition: transform var(--dur) var(--ease);
-}
-
-.lightbox.is-open img {
-  transform: scale(1);
-}
-
-/* Muted per-image hint (set via data-note), pinned just below the image. */
-.lightbox-note {
-  position: absolute;
-  bottom: clamp(0.75rem, 2.5vw, 1.5rem);
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  padding: 0.4rem 0.8rem;
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  background: rgba(10, 10, 10, 0.65);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.08em;
-  color: var(--ink-faint);
-  pointer-events: none;
-}
-
-.lightbox-close {
-  position: absolute;
-  top: clamp(0.75rem, 2vw, 1.25rem);
-  right: clamp(0.75rem, 2vw, 1.25rem);
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  background: rgba(10, 10, 10, 0.6);
-  color: var(--ink);
-  font-size: 1.25rem;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    background-color var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
-}
-
-.lightbox-close:hover {
-  background: var(--panel);
-  border-color: var(--ink-faint);
-}
-
-/* Prev/next controls, pinned to the vertical centre of each side. */
-.lightbox-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 2.75rem;
-  height: 2.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--line-strong);
-  border-radius: 50%;
-  background: rgba(10, 10, 10, 0.6);
-  color: var(--ink);
-  font-size: 1.5rem;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    background-color var(--dur) var(--ease),
-    border-color var(--dur) var(--ease);
-}
-
-.lightbox-nav:hover {
-  background: var(--panel);
-  border-color: var(--ink-faint);
-}
-
-.lightbox-prev {
-  left: clamp(0.75rem, 2vw, 1.5rem);
-}
-
-.lightbox-next {
-  right: clamp(0.75rem, 2vw, 1.5rem);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .lightbox,
-  .lightbox img {
-    transition: none;
-  }
-  .lightbox img {
-    transform: none;
-  }
 }
 
 /* --------------------------------------------------------------------------
@@ -1322,14 +1077,7 @@ hr {
   border-bottom: 1px solid var(--line);
 }
 
-.rc-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: clamp(2rem, 4vw, 3.5rem);
-  align-items: start;
-}
-
-/* The exploratory-status notice: visible and unmissable, but not alarmist. */
+/* The licensing-status notice: visible and unmissable, but not alarmist. */
 .notice {
   display: flex;
   gap: 0.875rem;
@@ -1366,131 +1114,157 @@ hr {
   margin-bottom: 1rem;
 }
 
-.scope-list li,
-.users-list li {
-  display: flex;
-  gap: 0.75rem;
-  padding-block: 0.625rem;
-  border-bottom: 1px solid var(--line);
-  font-size: var(--text-sm);
-  color: var(--ink-muted);
-  line-height: 1.6;
+/* Commercialization path — six stages presented as one ruled process. */
+.rc-path {
+  margin-top: clamp(2rem, 4vw, 3rem);
 }
 
-.scope-list li:last-child,
-.users-list li:last-child {
-  border-bottom: none;
-}
-
-.scope-list li::before {
-  content: '';
-  width: 0.875rem;
-  height: 1px;
-  background: var(--line-strong);
-  flex: none;
-  margin-top: 0.75rem;
-}
-
-.users-list {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 1.5rem;
-}
-
-/* Commercialization sequence — numbered ladder with a connecting rule. */
-.sequence {
-  counter-reset: step;
-  margin-top: clamp(2.5rem, 5vw, 3.5rem);
-}
-
-.sequence-title {
+.rc-path-title {
   font-size: var(--text-2xl);
-  margin-bottom: 1.75rem;
+  margin-bottom: 0.875rem;
 }
 
-.sequence-list {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-}
-
-.sequence-list li {
-  counter-increment: step;
-  background: var(--bg);
-  padding: 1.125rem 1rem 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.sequence-list li::before {
-  content: '0' counter(step);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  color: var(--ink-faint);
-  letter-spacing: 0.1em;
-}
-
-.sequence-step {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  line-height: 1.4;
-}
-
-.advisor-note {
-  margin-top: 1.5rem;
-  font-size: var(--text-sm);
+.rc-path-intro {
   color: var(--ink-muted);
-  max-width: 52rem;
+  font-size: var(--text-lg);
   line-height: 1.7;
+  max-width: 60rem;
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
 }
 
-/* --------------------------------------------------------------------------
-   12. Approach
-   -------------------------------------------------------------------------- */
-
-.approach-list {
+/* Ruled 3-up grid: shared hairlines make the stages read as one sequence
+   rather than unrelated feature cards. Reflows to 2 then 1 column. */
+.stage-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  counter-reset: phase;
 }
 
-.approach-list li {
-  counter-increment: phase;
+.stage {
   background: var(--bg);
-  padding: clamp(1.25rem, 2vw, 1.75rem);
+  padding: clamp(1.375rem, 2vw, 1.75rem);
   display: flex;
   flex-direction: column;
   gap: 0.625rem;
 }
 
-.approach-list li::before {
-  content: '0' counter(phase);
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  color: var(--ink-faint);
-  letter-spacing: 0.1em;
+.stage-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.125rem;
 }
 
-.approach-title {
+/* Two-digit stage number with a short accent progression tick beneath it —
+   a restrained, always-visible progression cue that holds at every width. */
+.stage-num {
+  position: relative;
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  padding-bottom: 0.375rem;
+  flex: none;
+}
+
+.stage-num::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1.25rem;
+  height: 2px;
+  background: var(--accent);
+}
+
+/* Phase label — deliberately restrained so it never competes with the title. */
+.stage-phase {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--ink-faint);
+}
+
+.stage-title {
   font-family: var(--font-display);
   font-size: var(--text-lg);
   font-weight: 600;
+  line-height: 1.25;
 }
 
-.approach-body {
+.stage-body {
   font-size: var(--text-sm);
   color: var(--ink-muted);
   line-height: 1.65;
+}
+
+/* Multidisciplinary-validation callout — collaborative framing, not a warning:
+   a lighter panel with an accent edge, no icon. */
+.callout {
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--line-strong);
+  border-left: 2px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--panel-2);
+}
+
+.callout-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.callout-body {
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  line-height: 1.7;
+  max-width: 62rem;
+}
+
+.rc-cta {
+  margin-top: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+/* --------------------------------------------------------------------------
+   12. Commercialization method
+   -------------------------------------------------------------------------- */
+
+/* Bullet list inside the four method cards — dashed markers to match the
+   institutional, engineering-drawing feel of the rest of the page. */
+.method-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.method-list li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+  line-height: 1.5;
+}
+
+.method-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.5rem;
+  height: 1px;
+  background: var(--line-strong);
 }
 
 /* --------------------------------------------------------------------------
@@ -1641,6 +1415,19 @@ hr {
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: clamp(2rem, 5vw, 4rem);
   align-items: start;
+}
+
+/* Investor/licensing statement above the interest lists. */
+.contact-statement {
+  color: var(--ink-muted);
+  font-size: var(--text-lg);
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+}
+
+/* Space the second heading (Areas of interest) away from the list above it. */
+.interest-list + .subhead {
+  margin-top: 1.75rem;
 }
 
 .interest-list li {
@@ -1897,12 +1684,8 @@ hr {
    -------------------------------------------------------------------------- */
 
 @media (max-width: 1080px) {
-  .sequence-list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-
-  .approach-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+  .stage-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1911,7 +1694,6 @@ hr {
    bar and the CTA is pushed off-screen. Keep main.js's matchMedia in sync. */
 @media (max-width: 1060px) {
   .hero-grid,
-  .rc-grid,
   .company-grid,
   .contact-grid {
     grid-template-columns: minmax(0, 1fr);
@@ -1974,28 +1756,10 @@ hr {
 }
 
 @media (max-width: 720px) {
-  .sequence-list,
-  .approach-list,
+  .stage-grid,
   .grid-3,
-  .grid-2,
-  .users-list {
+  .grid-2 {
     grid-template-columns: minmax(0, 1fr);
-  }
-
-  .model-metrics {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .metric {
-    border-right: none;
-  }
-
-  .metric:nth-last-child(-n + 2) {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .metric:last-child {
-    border-bottom: none;
   }
 
   .btn-row .btn {
@@ -2020,27 +1784,6 @@ hr {
   .rail::before,
   .rail::after {
     display: none;
-  }
-
-  .model-tabs {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .model-tab {
-    border-right: none;
-    border-bottom: 1px solid var(--line);
-    text-align: left;
-    padding-inline: 1rem;
-  }
-
-  .model-tab:last-child {
-    border-bottom: none;
-  }
-
-  .model-tab[aria-selected='true']::after {
-    inset: 0 auto 0 0;
-    width: 2px;
-    height: auto;
   }
 }
 
@@ -2069,7 +1812,6 @@ hr {
 
   .site-header,
   .nav-toggle,
-  .model-tabs,
   .skip-link {
     display: none;
   }
