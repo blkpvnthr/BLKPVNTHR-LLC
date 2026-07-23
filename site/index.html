@@ -168,87 +168,225 @@
             </div>
 
             <!--
-              Decision Evidence Trace — a conceptual illustration of how the
-              software connects a decision back to its inputs. It contains no
-              statistics, performance figures, customers, or model outputs; the
-              labels are structural, not data. It is not a product screenshot
-              and is not BLKPVNTHR.OS or ReactorCast.
+              Decision Evidence Graph — a conceptual analytical panel. The chart,
+              tabs, legend, and objective grid illustrate how the software connects
+              a decision to its evidence. Nothing here is measured data: trace
+              positions illustrate information flow, not performance, and the
+              objective values are status labels, not metrics. It is not a product
+              screenshot and is not BLKPVNTHR.OS or ReactorCast.
             -->
-            <div class="trace reveal" role="img" aria-labelledby="trace-title" aria-describedby="trace-desc">
-              <p id="trace-title" class="visually-hidden">Decision-system architecture</p>
-              <p id="trace-desc" class="visually-hidden">
-                A conceptual diagram of a decision-support system. Source evidence — operational data,
-                financial records, external datasets, and policy constraints — feeds an analytical layer of a
-                validated model, explicit assumptions, and versioned scenarios, which produces a decision
-                output of scenario comparison, risk and tradeoffs, and an evidence-backed recommendation
-                marked traceable. A traceability panel records that sources are attached, assumptions are
-                versioned, review status is visible, and decision history is retained.
-              </p>
-
-              <div class="trace-bar" aria-hidden="true">
-                <span class="trace-label">Decision-system architecture</span>
-                <span class="trace-tag">Interface concept</span>
+            <div class="model reveal">
+              <div class="model-bar">
+                <span class="model-label">Decision evidence graph</span>
+                <span class="model-tag">Interface concept</span>
               </div>
 
-              <div class="trace-body" aria-hidden="true">
-                <div class="trace-rail"></div>
-
-                <section class="trace-layer" data-layer="source">
-                  <p class="trace-layer-label">
-                    <span class="trace-node"></span>
-                    Source evidence
-                  </p>
-                  <ul class="trace-chips">
-                    <li>Operational data</li>
-                    <li>Financial records</li>
-                    <li>External datasets</li>
-                    <li>Policy constraints</li>
-                  </ul>
-                </section>
-
-                <section class="trace-layer" data-layer="analysis">
-                  <p class="trace-layer-label">
-                    <span class="trace-node"></span>
-                    Analytical layer
-                  </p>
-                  <ul class="trace-chips">
-                    <li>Validated model</li>
-                    <li>Explicit assumptions</li>
-                    <li>Versioned scenarios</li>
-                  </ul>
-                </section>
-
-                <section class="trace-layer" data-layer="decision">
-                  <p class="trace-layer-label">
-                    <span class="trace-node"></span>
-                    Decision output
-                  </p>
-                  <ul class="trace-out">
-                    <li>Scenario comparison</li>
-                    <li>Risk and tradeoffs</li>
-                    <li>
-                      Evidence-backed recommendation
-                      <span class="trace-status">Traceable</span>
-                    </li>
-                  </ul>
-                </section>
+              <div class="model-tabs" role="tablist" aria-label="Evidence trace emphasis">
+                <button
+                  class="model-tab"
+                  role="tab"
+                  id="tab-evidence"
+                  aria-controls="graph-panel"
+                  aria-selected="true"
+                  data-trace="evidence"
+                  type="button"
+                >
+                  Evidence
+                </button>
+                <button
+                  class="model-tab"
+                  role="tab"
+                  id="tab-analysis"
+                  aria-controls="graph-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-trace="analysis"
+                  type="button"
+                >
+                  Analysis
+                </button>
+                <button
+                  class="model-tab"
+                  role="tab"
+                  id="tab-review"
+                  aria-controls="graph-panel"
+                  aria-selected="false"
+                  tabindex="-1"
+                  data-trace="review"
+                  type="button"
+                >
+                  Review
+                </button>
               </div>
 
-              <div class="trace-foot" aria-hidden="true">
-                <p class="trace-foot-label">Traceability</p>
-                <ul class="trace-checks">
-                  <li>Sources attached</li>
-                  <li>Assumptions versioned</li>
-                  <li>Review status visible</li>
-                  <li>Decision history retained</li>
+              <div
+                class="model-body"
+                role="tabpanel"
+                id="graph-panel"
+                aria-labelledby="tab-evidence"
+                tabindex="0"
+              >
+                <div class="model-chart">
+                  <svg
+                    viewBox="0 0 336 136"
+                    role="img"
+                    aria-labelledby="graph-title"
+                    aria-describedby="graph-desc"
+                  >
+                    <title id="graph-title">Conceptual decision-evidence graph</title>
+                    <desc id="graph-desc">
+                      Three illustrative traces — evidence lineage, analytical transformation, and review
+                      trail — rising across six process checkpoints from sources to decision. Trace positions
+                      illustrate information flow, not measured performance.
+                    </desc>
+
+                    <g class="chart-grid" aria-hidden="true">
+                      <line x1="24" y1="12" x2="324" y2="12" />
+                      <line x1="24" y1="37" x2="324" y2="37" />
+                      <line x1="24" y1="62" x2="324" y2="62" />
+                      <line x1="24" y1="87" x2="324" y2="87" />
+                      <line x1="24" y1="112" x2="324" y2="112" />
+                      <line x1="24" y1="12" x2="24" y2="112" />
+                      <line x1="84" y1="12" x2="84" y2="112" />
+                      <line x1="144" y1="12" x2="144" y2="112" />
+                      <line x1="204" y1="12" x2="204" y2="112" />
+                      <line x1="264" y1="12" x2="264" y2="112" />
+                      <line x1="324" y1="12" x2="324" y2="112" />
+                    </g>
+
+                    <!-- Filled area under the emphasized trace -->
+                    <path
+                      class="series-fill is-active"
+                      data-fill="evidence"
+                      d="M24,96 L84,87 L144,75 L204,62 L264,49 L324,36 L324,112 L24,112 Z"
+                    />
+                    <path
+                      class="series-fill"
+                      data-fill="analysis"
+                      d="M24,101 L84,91 L144,76 L204,58 L264,45 L324,33 L324,112 L24,112 Z"
+                    />
+                    <path
+                      class="series-fill"
+                      data-fill="review"
+                      d="M24,92 L84,85 L144,78 L204,67 L264,53 L324,39 L324,112 L24,112 Z"
+                    />
+
+                    <!-- Three rising traces (pathLength normalizes the staged draw) -->
+                    <path
+                      class="series is-active"
+                      data-series="evidence"
+                      pathLength="1"
+                      d="M24,96 L84,87 L144,75 L204,62 L264,49 L324,36"
+                    />
+                    <path
+                      class="series"
+                      data-series="analysis"
+                      pathLength="1"
+                      d="M24,101 L84,91 L144,76 L204,58 L264,45 L324,33"
+                    />
+                    <path
+                      class="series"
+                      data-series="review"
+                      pathLength="1"
+                      d="M24,92 L84,85 L144,78 L204,67 L264,53 L324,39"
+                    />
+
+                    <!-- Checkpoint markers, shown on the emphasized trace only -->
+                    <g class="series-dots is-active" data-dots="evidence" aria-hidden="true">
+                      <circle cx="24" cy="96" r="2.4" />
+                      <circle cx="84" cy="87" r="2.4" />
+                      <circle cx="144" cy="75" r="2.4" />
+                      <circle cx="204" cy="62" r="2.4" />
+                      <circle cx="264" cy="49" r="2.4" />
+                      <circle cx="324" cy="36" r="2.4" />
+                    </g>
+                    <g class="series-dots" data-dots="analysis" aria-hidden="true">
+                      <circle cx="24" cy="101" r="2.4" />
+                      <circle cx="84" cy="91" r="2.4" />
+                      <circle cx="144" cy="76" r="2.4" />
+                      <circle cx="204" cy="58" r="2.4" />
+                      <circle cx="264" cy="45" r="2.4" />
+                      <circle cx="324" cy="33" r="2.4" />
+                    </g>
+                    <g class="series-dots" data-dots="review" aria-hidden="true">
+                      <circle cx="24" cy="92" r="2.4" />
+                      <circle cx="84" cy="85" r="2.4" />
+                      <circle cx="144" cy="78" r="2.4" />
+                      <circle cx="204" cy="67" r="2.4" />
+                      <circle cx="264" cy="53" r="2.4" />
+                      <circle cx="324" cy="39" r="2.4" />
+                    </g>
+
+                    <!-- Six qualitative process checkpoints (no quantitative axis) -->
+                    <g class="chart-axis" aria-hidden="true">
+                      <text x="24" y="127" text-anchor="start">SOURCES</text>
+                      <text x="84" y="127" text-anchor="middle">ASSUMPTIONS</text>
+                      <text x="144" y="127" text-anchor="middle">MODELS</text>
+                      <text x="204" y="127" text-anchor="middle">SCENARIOS</text>
+                      <text x="264" y="127" text-anchor="middle">VALIDATION</text>
+                      <text x="324" y="127" text-anchor="end">DECISION</text>
+                    </g>
+                  </svg>
+                </div>
+
+                <ul class="model-legend">
+                  <li class="legend-item is-active" data-legend="evidence">
+                    <span class="legend-swatch" aria-hidden="true"></span>
+                    Evidence lineage
+                  </li>
+                  <li class="legend-item" data-legend="analysis">
+                    <span class="legend-swatch" aria-hidden="true"></span>
+                    Analytical transformation
+                  </li>
+                  <li class="legend-item" data-legend="review">
+                    <span class="legend-swatch" aria-hidden="true"></span>
+                    Review trail
+                  </li>
                 </ul>
+
+                <p class="model-note">
+                  Trace positions illustrate information flow, not measured performance.
+                </p>
+              </div>
+
+              <p class="model-metrics-head">Design objectives</p>
+              <dl class="model-metrics">
+                <div class="metric">
+                  <dt class="metric-label">Evidence</dt>
+                  <dd class="metric-value">Linked</dd>
+                  <dd class="metric-delta">to source records</dd>
+                </div>
+                <div class="metric">
+                  <dt class="metric-label">Assumptions</dt>
+                  <dd class="metric-value">Explicit</dd>
+                  <dd class="metric-delta">documented for review</dd>
+                </div>
+                <div class="metric">
+                  <dt class="metric-label">Model</dt>
+                  <dd class="metric-value">Versioned</dd>
+                  <dd class="metric-delta">changes remain attributable</dd>
+                </div>
+                <div class="metric">
+                  <dt class="metric-label">Output</dt>
+                  <dd class="metric-value">Reviewable</dd>
+                  <dd class="metric-delta">decision basis retained</dd>
+                </div>
+              </dl>
+
+              <div class="model-foot">
+                <p class="model-caption">
+                  Every recommendation remains connected to its sources, assumptions, model version, and
+                  review history.
+                </p>
+                <div class="model-foot-row">
+                  <span class="provenance">
+                    <span class="provenance-dot" aria-hidden="true"></span>
+                    Provenance preserved · review history visible
+                  </span>
+                  <span class="model-label">Interface concept — not a product screenshot</span>
+                </div>
               </div>
             </div>
-
-            <p class="hero-caption">
-              Every recommendation remains connected to its sources, assumptions, model version, and review
-              history.
-            </p>
           </div>
         </div>
       </section>

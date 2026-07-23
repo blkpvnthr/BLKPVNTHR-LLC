@@ -167,8 +167,10 @@ hr {
   outline: none;
 }
 
-/* .faq clips to its rounded corners, which would slice the left and right edges
-   off an outward ring on its full-bleed summary rows. Draw it inward. */
+/* .model and .faq clip to their rounded corners, which would slice the left and
+   right edges off an outward ring on their full-bleed children. Draw it inward. */
+.model-tab:focus-visible,
+#graph-panel:focus-visible,
 .faq summary:focus-visible {
   outline-offset: -3px;
 }
@@ -566,23 +568,24 @@ hr {
 }
 
 /* --------------------------------------------------------------------------
-   7. Decision Evidence Trace (hero right)
+   7. Decision Evidence Graph (hero right)
 
-   A conceptual system diagram — no data, statistics, or product screenshot.
-   Source evidence flows to an analytical layer to a decision output, over a
-   traceability panel. The single accent marks functional signal only: the
-   provenance rail, the layer nodes, the traceability ticks, and the
-   "Traceable" status.
+   The old scenario-model composition — bar, tablist, plotting grid, three
+   rising traces, legend, 2x2 objective grid, status footer — reskinned as a
+   claim-safe conceptual panel. Nothing here is measured data: trace positions
+   illustrate information flow (not performance) and the objective values are
+   status labels (not metrics). The single accent marks the emphasized trace,
+   the active-tab underline, the checkpoints, and the provenance dot only.
    -------------------------------------------------------------------------- */
 
-.trace {
+.model {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
   background: var(--panel);
   overflow: hidden;
 }
 
-.trace-bar {
+.model-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -592,7 +595,7 @@ hr {
   background: var(--panel-2);
 }
 
-.trace-label {
+.model-label {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   text-transform: uppercase;
@@ -600,7 +603,7 @@ hr {
   color: var(--ink-faint);
 }
 
-.trace-tag {
+.model-tag {
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   letter-spacing: 0.08em;
@@ -611,236 +614,295 @@ hr {
   white-space: nowrap;
 }
 
-/* The three layers, strung along a vertical provenance rail on the left. */
-.trace-body {
-  position: relative;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.125rem;
+/* Trace-emphasis selector — an ARIA tablist, fully keyboard driven. */
+.model-tabs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
 }
 
-/* Provenance rail: a hairline the layer nodes sit on. Its accent segment
-   grows over it as the trace animates in; full height when static. */
-.trace-rail {
-  position: absolute;
-  top: 1.75rem;
-  bottom: 1.75rem;
-  left: calc(1.25rem + 5px);
-  width: 2px;
-  background: var(--line-strong);
-}
-
-.trace-rail::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(var(--accent), var(--accent-line));
-  transform-origin: top;
-}
-
-.trace-layer {
-  position: relative;
-  padding-left: 1.75rem;
-}
-
-.trace-layer-label {
-  margin-bottom: 0.75rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--ink-muted);
-}
-
-/* Node dot, centred on the rail (accent ring on the panel surface). */
-.trace-node {
-  position: absolute;
-  left: 0;
-  top: 0.15rem;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--panel);
-  border: 2px solid var(--accent);
-  box-sizing: content-box;
-}
-
-.trace-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4375rem;
-}
-
-.trace-chips li {
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  letter-spacing: 0.04em;
-  color: var(--ink-muted);
-  background: var(--bg);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  padding: 0.3125rem 0.5625rem;
-}
-
-/* Decision output rows — a small ruled sheet, like the card grids. */
-.trace-out {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  background: var(--line);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  overflow: hidden;
-}
-
-.trace-out li {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  background: var(--bg);
-  padding: 0.625rem 0.75rem;
-  font-size: var(--text-sm);
-  color: var(--ink);
-}
-
-.trace-status {
+.model-tab {
+  padding: 0.8125rem 0.5rem;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--accent);
-  border: 1px solid var(--accent-line);
-  border-radius: var(--radius);
-  padding: 0.125rem 0.4375rem;
-  white-space: nowrap;
+  color: var(--ink-faint);
+  border-right: 1px solid var(--line);
+  transition:
+    color var(--dur) var(--ease),
+    background-color var(--dur) var(--ease);
+  position: relative;
 }
 
-/* Traceability panel. */
-.trace-foot {
-  padding: 0.875rem 1rem;
-  border-top: 1px solid var(--line);
+.model-tab:last-child {
+  border-right: none;
+}
+
+.model-tab:hover {
+  color: var(--ink-muted);
   background: var(--panel-2);
 }
 
-.trace-foot-label {
+.model-tab[aria-selected='true'] {
+  color: var(--ink);
+  background: var(--panel-2);
+}
+
+.model-tab[aria-selected='true']::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 2px;
+  background: var(--accent);
+}
+
+.model-body {
+  padding: 1.25rem 1rem 1rem;
+}
+
+.model-chart {
+  position: relative;
+}
+
+.model-chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.chart-grid line {
+  stroke: var(--line-faint);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* Six qualitative checkpoints, no numeric axis. Small so all six fit the row;
+   sized in SVG user units, so they track the panel width. */
+.chart-axis text {
+  font-family: var(--font-mono);
+  font-size: 6px;
+  fill: var(--ink-faint);
+  letter-spacing: 0.02em;
+}
+
+/* Inactive traces stay gray but readable (3:1 non-text minimum); only the
+   emphasized trace takes the accent. */
+.series {
+  fill: none;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke: var(--ink-muted);
+  opacity: 0.75;
+  transition:
+    opacity var(--dur) var(--ease),
+    stroke var(--dur) var(--ease);
+}
+
+.series.is-active {
+  stroke: var(--accent);
+  opacity: 1;
+  stroke-width: 2;
+}
+
+.series-fill {
+  fill: var(--accent-dim);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.series-fill.is-active {
+  opacity: 1;
+}
+
+/* Checkpoint markers — shown only on the emphasized trace. */
+.series-dots circle {
+  fill: var(--panel);
+  stroke: var(--ink-muted);
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+.series-dots.is-active circle {
+  opacity: 1;
+  stroke: var(--accent);
+}
+
+.model-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  margin-top: 0.875rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--line);
+}
+
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--ink-faint);
+}
+
+.legend-swatch {
+  width: 12px;
+  height: 2px;
+  background: var(--ink-muted);
+  flex: none;
+}
+
+.legend-item.is-active {
+  color: var(--ink);
+}
+
+.legend-item.is-active .legend-swatch {
+  background: var(--accent);
+}
+
+/* Anti-metric note under the legend. */
+.model-note {
+  margin-top: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--ink-faint);
+}
+
+/* DESIGN OBJECTIVES heading above the objective grid. */
+.model-metrics-head {
+  padding: 0.875rem 1rem 0.5rem;
+  border-top: 1px solid var(--line);
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--ink-faint);
-  margin-bottom: 0.625rem;
 }
 
-.trace-checks {
+/* Objective grid — the old four-cell structure; values are status labels,
+   not measured metrics. */
+.model-metrics {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.375rem 1rem;
 }
 
-.trace-checks li {
+.metric {
+  padding: 0.875rem 1rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.metric:nth-child(2n) {
+  border-right: none;
+}
+
+.metric:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.metric-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-faint);
+  margin-bottom: 0.375rem;
+}
+
+.metric-value {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.metric-delta {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  color: var(--ink-faint);
+  margin-top: 0.125rem;
+}
+
+/* Status footer — provenance line + interface-concept label, with the relocated
+   supporting caption above them. */
+.model-foot {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--line);
+  background: var(--panel-2);
   display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.model-caption {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  line-height: 1.55;
+  color: var(--ink-faint);
+}
+
+.model-foot-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  flex-wrap: wrap;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--line);
+}
+
+.provenance {
+  display: inline-flex;
   align-items: center;
   gap: 0.5rem;
   font-family: var(--font-mono);
   font-size: var(--text-2xs);
-  letter-spacing: 0.04em;
   color: var(--ink-faint);
+  letter-spacing: 0.06em;
 }
 
-/* A small accent check mark. */
-.trace-checks li::before {
-  content: '';
-  width: 0.5rem;
-  height: 0.3125rem;
-  border-left: 1.5px solid var(--accent);
-  border-bottom: 1.5px solid var(--accent);
-  transform: rotate(-45deg) translateY(-1px);
+.provenance-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
   flex: none;
 }
 
-/* Supporting line under the visual. */
-.hero-caption {
-  margin-top: 1rem;
-  font-family: var(--font-mono);
-  font-size: var(--text-2xs);
-  line-height: 1.6;
-  color: var(--ink-faint);
+/* ---- Staged line draw (progressive enhancement) ----
+   With .js the three traces start undrawn (a pathLength-normalized dashoffset);
+   .is-drawn — added by main.js when the panel scrolls into view — draws them
+   in, staggered. If main.js never loads the head-script fallback drops .js.
+   Under reduced motion the graph renders complete immediately. Without JS,
+   every trace, label, and objective stays visible. */
+.js .model .series {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
 }
 
-/* ---- Staged reveal (progressive enhancement) ----
-   With .js, the layers, the rail's accent segment, the status, and the
-   traceability ticks start collapsed and play a short sequence once the trace
-   scrolls into view (main.js adds .is-traced). If main.js never loads the
-   head-script fallback drops the .js gate; under reduced motion the sequence
-   is skipped. Every path resolves to the complete, static diagram. */
-.js .trace .trace-layer,
-.js .trace .trace-status,
-.js .trace .trace-checks li {
-  opacity: 0;
-  transform: translateY(6px);
-  transition:
-    opacity 0.5s var(--ease),
-    transform 0.5s var(--ease);
+.js .model.is-drawn .series {
+  stroke-dashoffset: 0;
+  transition: stroke-dashoffset 0.9s var(--ease);
 }
 
-.js .trace .trace-rail::after {
-  transform: scaleY(0);
-  transition: transform 0.6s var(--ease);
+.js .model.is-drawn [data-series='analysis'] {
+  transition-delay: 0.15s;
 }
 
-.js .trace.is-traced .trace-layer,
-.js .trace.is-traced .trace-status,
-.js .trace.is-traced .trace-checks li {
-  opacity: 1;
-  transform: none;
-}
-
-.js .trace.is-traced .trace-rail::after {
-  transform: scaleY(1);
-}
-
-/* Sequence: source, then the rail draws down, then analysis, decision, the
-   traceable status, and finally the traceability ticks. */
-.js .trace.is-traced .trace-layer[data-layer='source'] {
-  transition-delay: 0.05s;
-}
-.js .trace.is-traced .trace-rail::after {
-  transition-delay: 0.25s;
-}
-.js .trace.is-traced .trace-layer[data-layer='analysis'] {
-  transition-delay: 0.45s;
-}
-.js .trace.is-traced .trace-layer[data-layer='decision'] {
-  transition-delay: 0.75s;
-}
-.js .trace.is-traced .trace-status {
-  transition-delay: 1.05s;
-}
-.js .trace.is-traced .trace-checks li:nth-child(1) {
-  transition-delay: 1.2s;
-}
-.js .trace.is-traced .trace-checks li:nth-child(2) {
-  transition-delay: 1.3s;
-}
-.js .trace.is-traced .trace-checks li:nth-child(3) {
-  transition-delay: 1.4s;
-}
-.js .trace.is-traced .trace-checks li:nth-child(4) {
-  transition-delay: 1.5s;
+.js .model.is-drawn [data-series='review'] {
+  transition-delay: 0.3s;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .js .trace .trace-layer,
-  .js .trace .trace-status,
-  .js .trace .trace-checks li {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-  .js .trace .trace-rail::after {
-    transform: none;
+  .js .model .series {
+    stroke-dashoffset: 0;
     transition: none;
   }
 }
@@ -933,6 +995,22 @@ hr {
   color: var(--ink-muted);
   font-size: var(--text-sm);
   line-height: 1.7;
+}
+
+/* The #approach method grid reads as four SEPARATE boxes rather than the shared
+   ruled sheet: real gaps, no framing background/border/clip on the container,
+   and a self-contained border + radius on each card. */
+.method {
+  gap: 1rem;
+  background: none;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.method .card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
 }
 
 /* --------------------------------------------------------------------------
@@ -1762,6 +1840,22 @@ hr {
     grid-template-columns: minmax(0, 1fr);
   }
 
+  .model-metrics {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .metric {
+    border-right: none;
+  }
+
+  .metric:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .metric:last-child {
+    border-bottom: none;
+  }
+
   .btn-row .btn {
     flex: 1 1 100%;
   }
@@ -1784,6 +1878,27 @@ hr {
   .rail::before,
   .rail::after {
     display: none;
+  }
+
+  .model-tabs {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .model-tab {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    padding-inline: 1rem;
+  }
+
+  .model-tab:last-child {
+    border-bottom: none;
+  }
+
+  .model-tab[aria-selected='true']::after {
+    inset: 0 auto 0 0;
+    width: 2px;
+    height: auto;
   }
 }
 
@@ -1812,6 +1927,7 @@ hr {
 
   .site-header,
   .nav-toggle,
+  .model-tabs,
   .skip-link {
     display: none;
   }
