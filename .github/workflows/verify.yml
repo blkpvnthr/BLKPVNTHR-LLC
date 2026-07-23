@@ -34,6 +34,9 @@ jobs:
       - name: Validate metadata, links, accessibility, and claim safety
         run: npm run validate
 
+      - name: Run regression tests (claim safety + graph init)
+        run: npm run test:unit
+
       - name: Guard against publishing private records
         run: |
           if find site -type f \( -name '*.pdf' -o -name '*.xlsx' -o -name '*.csv' \) | grep -q .; then

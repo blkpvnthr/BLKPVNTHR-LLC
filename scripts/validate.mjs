@@ -16,6 +16,7 @@
 
 import { readFileSync, readdirSync, existsSync, statSync } from 'node:fs';
 import { join, relative, dirname, resolve } from 'node:path';
+import { stripInert, findClaimViolations } from './claims.mjs';
 
 const SITE = resolve(process.argv[2] ?? 'site');
 const CANONICAL_ORIGIN = 'https://blkpvnthr.com';
@@ -39,13 +40,7 @@ const all = walk(SITE);
 const htmlFiles = all.filter((f) => f.endsWith('.html'));
 const rel = (f) => relative(SITE, f);
 
-/** Strip comments and script/style bodies so checks do not match commentary. */
-function stripInert(html) {
-  return html
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/<script[\s\S]*?<\/script>/gi, '')
-    .replace(/<style[\s\S]*?<\/style>/gi, '');
-}
+// stripInert + findClaimViolations are imported from ./claims.mjs (see top).
 
 function attr(tag, name) {
   const m = tag.match(new RegExp(`${name}\\s*=\\s*"([^"]*)"`, 'i'));
@@ -221,55 +216,13 @@ for (const file of htmlFiles) {
 
 /* ------------------------------------------------------- 4. claim safety */
 
-/**
- * Each rule blocks a category of claim the company cannot substantiate.
- * `allow` exempts the explicit negations ("has not licensed", "is not
- * affiliated with"), which are required copy rather than violations.
- */
-const CLAIM_RULES = [
-  {
-    label: 'implies ReactorCast is licensed or owned',
-    re: /\b(we|blkpvnthr(?:\s+llc)?)\s+(?:have|has)\s+licen[sc]ed\b|\bour\s+reactorcast\b|\breactorcast\s+is\s+(?:our|a\s+blkpvnthr)\b/gi
-  },
-  {
-    label: 'implies LANL/DOE partnership or endorsement',
-    re: /\b(partner(?:ed|ship)?|affiliat(?:ed|ion)|endorse[ds]?|in\s+collaboration)\b[^.]{0,60}\b(los\s+alamos|lanl|department\s+of\s+energy|\bdoe\b)\b/gi,
-    allow: /\bnot\s+(?:affiliated|endorsed)\b|\bno\s+affiliation\b/i
-  },
-  {
-    label: 'asserts customers, clients, or deployments the company does not have',
-    re: /\b(our|existing|current)\s+(customers|clients)\b|\btrusted\s+by\b|\bused\s+by\s+(?:leading|hundreds|thousands)\b|\b(?:customers|organizations)\s+(?:worldwide|across\s+the)\b/gi
-  },
-  {
-    label: 'asserts a certification, clearance, or authorization not held',
-    re: /\b(?:soc\s*2|iso\s*27001|fedramp|cmmc|nist\s*800-171)\s*(?:compliant|certified|certification|authorized)\b|\bsecurity\s+clearance\b|\bauthority\s+to\s+operate\b|\bclassified\s+(?:system|environment)\s+deployment/gi,
-    allow: /\bdoes\s+not\s+(?:hold|claim)\b/i
-  },
-  {
-    label: 'asserts an award, rating, or testimonial',
-    re: /\baward-winning\b|\bindustry-leading\b|\brated\s+#?1\b|\bbest-in-class\b/gi
-  },
-  {
-    label: 'implies NASA or APL endorsement rather than prior employment experience',
-    re: /\b(?:nasa|johns\s+hopkins|applied\s+physics\s+laboratory|apl)\b[^.]{0,40}\b(?:partner|endorse[ds]?|client|customer)\b/gi
-  },
-  {
-    label: 'startup hype / unsupported superlative',
-    re: /\brevolutioniz\w*\b|\bgame[- ]changing\b|\bcutting[- ]edge\b|\bworld[- ]class\b|\bdisrupt(?:ing|ive)\b/gi
-  }
-];
-
+// Claim rules + matcher live in scripts/claims.mjs so the regression suite
+// (scripts/claims.test.mjs) can exercise them against fixtures. Scans every
+// HTML page and every .js file under the site.
 for (const file of [...htmlFiles, ...all.filter((f) => f.endsWith('.js'))]) {
   const raw = readFileSync(file, 'utf8');
-  const text = file.endsWith('.html') ? stripInert(raw).replace(/<[^>]*>/g, ' ') : raw;
-  const name = rel(file);
-
-  for (const rule of CLAIM_RULES) {
-    for (const m of text.matchAll(rule.re)) {
-      const window = text.slice(Math.max(0, m.index - 90), m.index + m[0].length + 90);
-      if (rule.allow && rule.allow.test(window)) continue;
-      fail(name, `claim check — ${rule.label}: "${m[0].replace(/\s+/g, ' ').trim()}"`);
-    }
+  for (const v of findClaimViolations(raw, file.endsWith('.html'))) {
+    fail(rel(file), `claim check — ${v.label}: "${v.match}"`);
   }
 }
 
