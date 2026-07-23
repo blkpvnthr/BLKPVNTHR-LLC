@@ -9,7 +9,7 @@
     "format": "prettier --write \"site/**/*.{html,css,js}\" \"scripts/**/*.mjs\"",
     "format:check": "prettier --check \"site/**/*.{html,css,js}\" \"scripts/**/*.mjs\"",
     "validate": "node scripts/validate.mjs site",
-    "test:unit": "node --test scripts/claims.test.mjs",
+    "test:unit": "node --test scripts/claims.test.mjs scripts/evidence-graph.test.mjs",
     "test": "npm run format:check && npm run validate && npm run test:unit"
   },
   "devDependencies": {

@@ -57,35 +57,133 @@
   })();
 
   /* ---------------------------------------------------------------------
-     Decision Evidence Trace
+     Decision Evidence Graph
 
-     A conceptual, non-quantitative diagram in the hero. CSS renders the
-     complete static diagram by default; adding .is-traced plays a short,
-     one-shot staged reveal (source -> analysis -> decision -> traceability).
-     Under reduced motion, or without IntersectionObserver, the class is added
-     immediately and the CSS reveal is a no-op — the diagram is simply shown.
+     A conceptual, non-quantitative analytical panel in the hero. Three traces
+     (evidence lineage, analytical transformation, review trail) rise across six
+     process checkpoints. An ARIA tablist emphasizes one trace at a time while
+     the others stay visible at readable contrast; click and keyboard SELECT a
+     trace, hover and focus PREVIEW one (reverting to the selection on leave/blur
+     — focus behaves like hover). A one-shot staged line draw plays when the
+     panel scrolls into view (.is-drawn); under reduced motion, or without
+     IntersectionObserver, the completed graph is rendered immediately. Without
+     JavaScript every trace and label is already visible.
+
+     None of the positions or labels represent numerical values.
      --------------------------------------------------------------------- */
-  (function initEvidenceTrace() {
-    var trace = document.querySelector('.trace');
-    if (!trace) return;
+  (function initEvidenceGraph() {
+    var model = document.querySelector('.model');
+    if (!model) return;
 
-    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
-      trace.classList.add('is-traced');
-      return;
+    // The tablist is OPTIONAL. The emphasis switcher only wires up when it is
+    // present; the staged draw below runs regardless, so the graph can never
+    // render blank if the markup ever ships the panel without its tabs.
+    var tablist = document.querySelector('.model-tabs');
+    var tabs = tablist ? Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]')) : [];
+    var panel = document.getElementById('graph-panel');
+    var selected = 'evidence'; // the committed trace; hover/focus only preview
+
+    // Emphasize a trace visually — the line, its filled area, its checkpoint
+    // dots, and its legend entry. The other traces stay visible (inactive).
+    function emphasize(trace) {
+      document.querySelectorAll('[data-series]').forEach(function (p) {
+        p.classList.toggle('is-active', p.dataset.series === trace);
+      });
+      document.querySelectorAll('[data-fill]').forEach(function (p) {
+        p.classList.toggle('is-active', p.dataset.fill === trace);
+      });
+      document.querySelectorAll('[data-dots]').forEach(function (g) {
+        g.classList.toggle('is-active', g.dataset.dots === trace);
+      });
+      document.querySelectorAll('[data-legend]').forEach(function (i) {
+        i.classList.toggle('is-active', i.dataset.legend === trace);
+      });
     }
 
+    // Commit a selection: update tab state (roving tabindex + aria-selected),
+    // point the panel at the active tab, and emphasize it.
+    function select(trace, focusTab) {
+      selected = trace;
+      tabs.forEach(function (tab) {
+        var isSel = tab.dataset.trace === trace;
+        tab.setAttribute('aria-selected', String(isSel));
+        tab.tabIndex = isSel ? 0 : -1;
+        if (isSel && focusTab) tab.focus();
+        if (isSel && panel) panel.setAttribute('aria-labelledby', tab.id);
+      });
+      emphasize(trace);
+    }
+
+    if (tablist) {
+      tabs.forEach(function (tab) {
+        tab.addEventListener('click', function () {
+          select(tab.dataset.trace, false);
+        });
+        // Hover and focus preview the trace without committing the selection.
+        tab.addEventListener('mouseenter', function () {
+          emphasize(tab.dataset.trace);
+        });
+        tab.addEventListener('focus', function () {
+          emphasize(tab.dataset.trace);
+        });
+      });
+
+      // Leaving the tablist (pointer or focus) restores the committed selection.
+      tablist.addEventListener('mouseleave', function () {
+        emphasize(selected);
+      });
+      tablist.addEventListener('focusout', function (event) {
+        if (!tablist.contains(event.relatedTarget)) emphasize(selected);
+      });
+
+      // Standard WAI-ARIA tablist keyboard interaction (automatic activation).
+      tablist.addEventListener('keydown', function (event) {
+        var index = tabs.indexOf(document.activeElement);
+        if (index === -1) return;
+
+        var next = null;
+        if (event.key === 'ArrowRight' || event.key === 'ArrowDown')
+          next = (index + 1) % tabs.length;
+        else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp')
+          next = (index - 1 + tabs.length) % tabs.length;
+        else if (event.key === 'Home') next = 0;
+        else if (event.key === 'End') next = tabs.length - 1;
+
+        if (next !== null) {
+          event.preventDefault();
+          select(tabs[next].dataset.trace, true);
+        }
+      });
+    }
+
+    // Normalize the initial state (the required amendment): the marked-up active
+    // tab, or the first tab, or — with no tablist at all — the default trace.
+    // Never trust static classes alone; apply it through the same select() path.
+    var initialTab =
+      tabs.filter(function (tab) {
+        return tab.getAttribute('aria-selected') === 'true';
+      })[0] || tabs[0];
+    select(initialTab ? initialTab.dataset.trace : selected, false);
+
+    // Staged line draw once the panel is in view; immediate under reduced motion.
+    function draw() {
+      model.classList.add('is-drawn');
+    }
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      draw();
+      return;
+    }
     var observer = new IntersectionObserver(
       function (entries) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
-          entry.target.classList.add('is-traced');
+          draw();
           observer.unobserve(entry.target);
         });
       },
       { rootMargin: '0px 0px -12% 0px', threshold: 0.25 }
     );
-
-    observer.observe(trace);
+    observer.observe(model);
   })();
 
   /* ---------------------------------------------------------------------
