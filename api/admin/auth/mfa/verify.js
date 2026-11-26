@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     challengeId,
     code: String(code).replace(/\s+/g, '')
   });
-  if (error) return json(res, 400, { error: 'invalid_code' });
+  if (error) return json(res, 400, { error: 'invalid_code', detail: error.message });
 
   return json(res, 200, { ok: true, next: 'dashboard' });
 }
