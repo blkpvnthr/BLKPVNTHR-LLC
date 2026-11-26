@@ -19,6 +19,12 @@ export function json(res, status, obj) {
   res.end(JSON.stringify(obj));
 }
 
+export function clientIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || 'unknown';
+}
+
 export function requireMethod(req, res, method) {
   if (req.method !== method) {
     res.setHeader('Allow', method);

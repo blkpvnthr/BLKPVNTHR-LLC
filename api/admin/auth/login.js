@@ -1,5 +1,5 @@
 import { serverClient } from '../../_lib/supabase.js';
-import { readJson, json, requireMethod } from '../../_lib/http.js';
+import { readJson, json, requireMethod, clientIp } from '../../_lib/http.js';
 import { checkCsrf } from '../../_lib/csrf.js';
 
 // POST /api/admin/auth/login — password sign-in (step 1 of 2; MFA follows).
@@ -11,6 +11,15 @@ export default async function handler(req, res) {
   if (!email || !password) return json(res, 400, { error: 'missing_credentials' });
 
   const supabase = serverClient(req, res);
+
+  // App-layer rate limit (defense-in-depth fallback for the WAF): 10 attempts / IP / min.
+  const { data: allowed } = await supabase.rpc('rl_hit', {
+    p_bucket: 'login:' + clientIp(req),
+    p_limit: 10,
+    p_window_secs: 60
+  });
+  if (allowed === false) return json(res, 429, { error: 'rate_limited' });
+
   const { error } = await supabase.auth.signInWithPassword({
     email: String(email).trim().toLowerCase(),
     password: String(password)

@@ -1,0 +1,46 @@
+{
+  "firewallEnabled": true,
+  "crs": {
+    "sqli": { "active": true, "action": "deny" },
+    "xss": { "active": true, "action": "deny" },
+    "lfi": { "active": true, "action": "deny" },
+    "rfi": { "active": true, "action": "deny" },
+    "rce": { "active": true, "action": "deny" },
+    "php": { "active": true, "action": "deny" },
+    "java": { "active": true, "action": "deny" },
+    "ma": { "active": true, "action": "deny" },
+    "sf": { "active": true, "action": "deny" },
+    "gen": { "active": true, "action": "log" },
+    "sd": { "active": true, "action": "log" }
+  },
+  "rules": [
+    {
+      "name": "Admin auth rate limit",
+      "description": "Throttle authentication endpoints (deter credential stuffing / brute force)",
+      "active": true,
+      "conditionGroup": [{ "conditions": [{ "type": "path", "op": "pre", "value": "/api/admin/auth/" }] }],
+      "action": { "mitigate": { "action": "rate_limit", "rateLimit": { "algo": "fixed_window", "window": 60, "limit": 20, "keys": ["ip"], "action": "deny" }, "actionDuration": "60s" } }
+    },
+    {
+      "name": "Admin uploads rate limit",
+      "description": "Throttle document upload endpoints",
+      "active": true,
+      "conditionGroup": [{ "conditions": [{ "type": "path", "op": "pre", "value": "/api/admin/documents/upload" }] }],
+      "action": { "mitigate": { "action": "rate_limit", "rateLimit": { "algo": "fixed_window", "window": 60, "limit": 30, "keys": ["ip"], "action": "deny" }, "actionDuration": "60s" } }
+    },
+    {
+      "name": "Admin exports rate limit",
+      "description": "Throttle export generation endpoints",
+      "active": true,
+      "conditionGroup": [{ "conditions": [{ "type": "path", "op": "pre", "value": "/api/admin/exports" }] }],
+      "action": { "mitigate": { "action": "rate_limit", "rateLimit": { "algo": "fixed_window", "window": 60, "limit": 20, "keys": ["ip"], "action": "deny" }, "actionDuration": "60s" } }
+    },
+    {
+      "name": "Admin API rate limit",
+      "description": "General per-IP rate limit for administrative API endpoints",
+      "active": true,
+      "conditionGroup": [{ "conditions": [{ "type": "path", "op": "pre", "value": "/api/admin/" }] }],
+      "action": { "mitigate": { "action": "rate_limit", "rateLimit": { "algo": "fixed_window", "window": 60, "limit": 120, "keys": ["ip"], "action": "deny" }, "actionDuration": "60s" } }
+    }
+  ]
+}

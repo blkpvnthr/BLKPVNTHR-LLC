@@ -1,5 +1,5 @@
 import { serverClient } from '../../../_lib/supabase.js';
-import { readJson, json, requireMethod } from '../../../_lib/http.js';
+import { readJson, json, requireMethod, clientIp } from '../../../_lib/http.js';
 import { checkCsrf } from '../../../_lib/csrf.js';
 
 // POST /api/admin/auth/mfa/verify — verify a TOTP code, upgrading the session to AAL2.
@@ -16,6 +16,14 @@ export default async function handler(req, res) {
     data: { user }
   } = await supabase.auth.getUser();
   if (!user) return json(res, 401, { error: 'unauthorized' });
+
+  // App-layer rate limit: 10 MFA verifications / IP / min.
+  const { data: allowed } = await supabase.rpc('rl_hit', {
+    p_bucket: 'mfa:' + clientIp(req),
+    p_limit: 10,
+    p_window_secs: 60
+  });
+  if (allowed === false) return json(res, 429, { error: 'rate_limited' });
 
   // Resolve the factor: the one being enrolled (passed in) or the user's TOTP factor.
   let factorId = body.factorId;
