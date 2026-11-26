@@ -198,6 +198,31 @@
         window.location.href = '/admin/login';
       });
     }
+
+    var pwForm = qs('pw-form');
+    if (pwForm) {
+      await getCsrf();
+      pwForm.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        var note = qs('pw-notice');
+        var r = await post('/change-password', {
+          currentPassword: qs('pw-current').value,
+          newPassword: qs('pw-new').value
+        });
+        if (r.status === 200 && r.data.ok) {
+          notice(note, 'info', 'Password updated.');
+          pwForm.reset();
+        } else {
+          var m =
+            r.data && r.data.error === 'wrong_current_password'
+              ? 'Current password is incorrect.'
+              : r.data && r.data.error === 'rate_limited'
+                ? 'Too many attempts — wait a few minutes.'
+                : 'Could not update password. Use at least 12 characters with mixed character types.';
+          notice(note, 'err', m);
+        }
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {

@@ -76,6 +76,27 @@
               row-level-security layer.
             </p>
           </div>
+          <div class="card" style="margin-top: 16px; max-width: 460px">
+            <h2 style="font-size: 1rem; margin: 0 0 4px">Change password</h2>
+            <p class="muted" style="font-size: 0.8rem; margin: 0 0 14px">
+              Required before production use. Minimum 12 characters with upper/lower case, a digit and a
+              symbol.
+            </p>
+            <form id="pw-form" novalidate>
+              <div class="field">
+                <label for="pw-current">Current password</label>
+                <input id="pw-current" type="password" autocomplete="current-password" required />
+              </div>
+              <div class="field">
+                <label for="pw-new">New password</label>
+                <input id="pw-new" type="password" autocomplete="new-password" required />
+              </div>
+              <button class="btn btn-primary" type="submit" style="width: auto; padding: 0.55rem 1.1rem">
+                Update password
+              </button>
+              <p id="pw-notice" class="notice notice-info" hidden></p>
+            </form>
+          </div>
         </main>
       </div>
     </div>
