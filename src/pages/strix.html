@@ -73,44 +73,125 @@
       </p>
       <h2 class="section-title">Open questions and technical uncertainties.</h2>
       <p class="lead">
-        The research investigates whether the proposed methodology can achieve the following. These are
-        questions under investigation, not established breakthroughs.
+        The research investigates whether the proposed methodology can achieve the following. Select a
+        question to see the working hypothesis under investigation. These are hypotheses to be tested, not
+        established breakthroughs or measured results.
       </p>
     </div>
 
     <div class="grid grid-2">
-      <article class="card reveal">
-        <p class="card-index">Q1</p>
-        <p class="card-body">Can it improve assertion-level factual reliability?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q2</p>
-        <p class="card-body">Can it improve the temporal relevance of retrieved evidence?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q3</p>
-        <p class="card-body">Can it identify unsupported conclusions?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q4</p>
-        <p class="card-body">Can it detect conflicting evidence?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q5</p>
-        <p class="card-body">Can it improve appropriate abstention?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q6</p>
-        <p class="card-body">Can it produce reproducible research artifacts?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q7</p>
-        <p class="card-body">Can it preserve institutional knowledge boundaries?</p>
-      </article>
-      <article class="card reveal">
-        <p class="card-index">Q8</p>
-        <p class="card-body">Can it remain computationally practical at institutional scale?</p>
-      </article>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q1</span>
+          <span class="qcard-q">Can it improve assertion-level factual reliability?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Linking every assertion to specific supporting evidence — and dropping those that lack it — should
+            reduce unsupported statements relative to methods that judge a generated passage as a whole.
+            Whether it does, and by how much, is what the research sets out to measure.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q2</span>
+          <span class="qcard-q">Can it improve the temporal relevance of retrieved evidence?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Recording and weighing each source's time-validity should let retrieval favour evidence that is
+            current for the question, not merely textually similar to it. The effect on real queries is an
+            open question.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q3</span>
+          <span class="qcard-q">Can it identify unsupported conclusions?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Separating the drafting of a conclusion from an independent check of its support should make
+            conclusions with missing or weak evidence detectable rather than invisible. The research tests how
+            reliably that separation surfaces them.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q4</span>
+          <span class="qcard-q">Can it detect conflicting evidence?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Comparing candidate assertions against the whole retrieved set, rather than a single best match,
+            should expose contradictions that single-pass retrieval tends to hide. Whether this holds across
+            domains remains to be shown.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q5</span>
+          <span class="qcard-q">Can it improve appropriate abstention?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            An explicit option to withhold a conclusion when support is insufficient should trade a small
+            reduction in coverage for a meaningful gain in reliability. Finding the right balance is part of
+            the investigation.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q6</span>
+          <span class="qcard-q">Can it produce reproducible research artifacts?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Retaining sources, assumptions, and the verification trail with each conclusion should let the
+            same result be regenerated and independently reviewed. The research examines how complete that
+            record needs to be.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q7</span>
+          <span class="qcard-q">Can it preserve institutional knowledge boundaries?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Enforcing governed boundaries at retrieval time should keep separate institutional environments
+            distinct while still allowing useful analysis within each. Whether the boundary holds under
+            pressure is a question the research probes.
+          </p>
+        </div>
+      </details>
+      <details class="card qcard reveal">
+        <summary>
+          <span class="card-index">Q8</span>
+          <span class="qcard-q">Can it remain computationally practical at institutional scale?</span>
+        </summary>
+        <div class="qcard-body">
+          <p class="qcard-label">Working hypothesis</p>
+          <p class="card-body">
+            Verification and provenance add cost; the open question is whether that cost stays within a
+            practical range as the knowledge base and query volume grow. The research treats this as a limit
+            to be characterized, not assumed.
+          </p>
+        </div>
+      </details>
     </div>
   </div>
 </section>
@@ -219,6 +300,20 @@
         </p>
         <h3 class="stage-title">Reproducible research record</h3>
         <p class="stage-body">The full basis is retained so the result can be reproduced and reviewed.</p>
+      </li>
+      <li class="stage" data-phase="commercialize">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Step</span>
+            09
+          </span>
+          <span class="stage-phase">Revalidation</span>
+        </p>
+        <h3 class="stage-title">Temporal revalidation</h3>
+        <p class="stage-body">
+          As evidence changes or time passes, a prior conclusion is re-checked against current sources and
+          flagged when it no longer holds — returning the question to retrieval.
+        </p>
       </li>
     </ol>
   </div>

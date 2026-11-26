@@ -171,7 +171,8 @@ hr {
    right edges off an outward ring on their full-bleed children. Draw it inward. */
 .model-tab:focus-visible,
 #graph-panel:focus-visible,
-.faq summary:focus-visible {
+.faq summary:focus-visible,
+.qcard > summary:focus-visible {
   outline-offset: -3px;
 }
 
@@ -1011,6 +1012,67 @@ hr {
 .method .card {
   border: 1px solid var(--line);
   border-radius: var(--radius-lg);
+}
+
+/* Expandable research-question cards (STRIX). A .card that is a native <details>:
+   the question is the summary, the working hypothesis is revealed on open. The
+   padding moves off the card onto the summary/body so the whole summary row is a
+   single click target, and a chevron mirrors the FAQ affordance. */
+.qcard {
+  padding: 0;
+  cursor: pointer;
+}
+
+.qcard > summary {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: clamp(1.5rem, 2.5vw, 2rem);
+  position: relative;
+}
+
+.qcard > summary::-webkit-details-marker {
+  display: none;
+}
+
+.qcard > summary::after {
+  content: '';
+  position: absolute;
+  top: clamp(1.75rem, 2.5vw, 2.25rem);
+  right: clamp(1.5rem, 2.5vw, 2rem);
+  width: 9px;
+  height: 9px;
+  border-right: 1px solid var(--ink-faint);
+  border-bottom: 1px solid var(--ink-faint);
+  transform: rotate(45deg);
+  transition: transform var(--dur) var(--ease);
+  flex: none;
+}
+
+.qcard[open] > summary::after {
+  transform: rotate(-135deg);
+}
+
+.qcard-q {
+  color: var(--ink);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: 1.4;
+  padding-right: 1.25rem;
+}
+
+.qcard-body {
+  padding: 0 clamp(1.5rem, 2.5vw, 2rem) clamp(1.5rem, 2.5vw, 2rem);
+}
+
+.qcard-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-2xs);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  margin-bottom: 0.4rem;
 }
 
 /* --------------------------------------------------------------------------
