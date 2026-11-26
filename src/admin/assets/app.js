@@ -1,59 +1,216 @@
-/* BLKPVNTHR LLC Admin — P0 bootstrap.
- * Reports backend health and wires the auth-page shells. Real credential +
- * MFA sign-in is provisioned in Phase 1; this file intentionally performs no
- * authentication yet and stores nothing in the browser. */
+/* BLKPVNTHR LLC Admin — client controller (Phase 1).
+ * Drives the server-side auth flow: all credentials/codes are POSTed to
+ * /api/admin/auth/*; no Supabase client runs in the browser and no tokens are
+ * stored here — the session lives only in HTTP-only cookies the server sets. */
 (function () {
   'use strict';
-  var ENV = window.__ADMIN_ENV__ || {};
+  var AUTH = '/api/admin/auth';
+  var csrf = '';
 
-  function setStatus(ok, label) {
-    var el = document.getElementById('status');
-    if (!el) return;
-    el.textContent = '';
-    var dot = document.createElement('span');
-    dot.className = 'dot ' + (ok ? 'ok' : 'bad');
-    var txt = document.createElement('span');
-    txt.textContent = label;
-    el.appendChild(dot);
-    el.appendChild(txt);
+  function qs(id) {
+    return document.getElementById(id);
   }
 
-  // Health probe — proves the serverless backend + env wiring are live.
+  function notice(el, type, msg) {
+    if (!el) return;
+    el.hidden = false;
+    el.className = 'notice notice-' + type;
+    el.textContent = msg;
+  }
+
+  async function getCsrf() {
+    var r = await fetch(AUTH + '/csrf', { credentials: 'same-origin' });
+    var d = await r.json();
+    csrf = d.token;
+    return csrf;
+  }
+
+  async function post(path, body) {
+    var r = await fetch(AUTH + path, {
+      method: 'POST',
+      credentials: 'same-origin',
+      headers: { 'content-type': 'application/json', 'x-csrf-token': csrf },
+      body: JSON.stringify(body || {})
+    });
+    var d = {};
+    try {
+      d = await r.json();
+    } catch (e) {
+      /* ignore */
+    }
+    return { status: r.status, data: d };
+  }
+
+  // ---- backend health pill ----
   function probe() {
-    setStatus(false, 'Checking backend…');
+    var el = qs('status');
+    if (!el) return;
     fetch('/api/admin/health', { headers: { accept: 'application/json' } })
       .then(function (r) {
-        return r.ok ? r.json() : Promise.reject(r.status);
+        return r.ok ? r.json() : Promise.reject();
       })
       .then(function (d) {
-        setStatus(
-          true,
+        render(
+          el,
+          'ok',
           'Backend online · Supabase ' + (d.supabaseConfigured ? 'configured' : 'not configured')
         );
       })
       .catch(function () {
-        setStatus(false, 'Backend unreachable');
+        render(el, 'bad', 'Backend unreachable');
       });
+    function render(e, cls, label) {
+      e.textContent = '';
+      var dot = document.createElement('span');
+      dot.className = 'dot ' + cls;
+      var t = document.createElement('span');
+      t.textContent = label;
+      e.appendChild(dot);
+      e.appendChild(t);
+    }
   }
 
-  function wireLogin() {
-    var form = document.getElementById('login-form');
+  // ---- login ----
+  function initLogin() {
+    var form = qs('login-form');
     if (!form) return;
-    var notice = document.getElementById('login-notice');
-    form.addEventListener('submit', function (e) {
+    var msg = qs('login-notice');
+    getCsrf();
+    form.addEventListener('submit', async function (e) {
       e.preventDefault();
-      if (notice) {
-        notice.hidden = false;
-        notice.className = 'notice notice-info';
-        notice.textContent =
-          'Secure sign-in (email + mandatory MFA) is being provisioned in Phase 1. ' +
-          'The backend, database, and access controls are already live.';
+      var btn = form.querySelector('button[type=submit]');
+      btn.disabled = true;
+      var res = await post('/login', {
+        email: qs('email').value.trim(),
+        password: qs('password').value
+      });
+      if (res.status === 200 && res.data.ok) {
+        if (res.data.next === 'dashboard') {
+          window.location.href = '/admin/';
+        } else {
+          var step = res.data.next === 'mfa' ? 'challenge' : 'enroll';
+          window.location.href = '/admin/mfa?step=' + step;
+        }
+        return;
       }
+      btn.disabled = false;
+      notice(
+        msg,
+        'err',
+        res.status === 403
+          ? 'Security check failed — reload the page and try again.'
+          : 'Invalid email or password.'
+      );
     });
+  }
+
+  // ---- MFA (enroll + challenge) ----
+  function initMfa() {
+    var root = qs('mfa-form');
+    if (!root) return;
+    var step = new URLSearchParams(window.location.search).get('step') || 'challenge';
+    getCsrf().then(function () {
+      if (step === 'enroll') startEnroll();
+      else startChallenge(null);
+    });
+  }
+
+  async function startEnroll() {
+    qs('mfa-title').textContent = 'Set up two-factor authentication';
+    qs('mfa-sub').textContent =
+      'Scan the QR code with an authenticator app (e.g. Google Authenticator, 1Password, Authy), then enter the 6-digit code.';
+    var box = qs('mfa-qr');
+    var res = await post('/mfa/enroll', {});
+    if (res.status !== 200) {
+      notice(
+        qs('mfa-notice'),
+        'err',
+        'Could not start enrollment. Return to sign in and try again.'
+      );
+      return;
+    }
+    box.textContent = '';
+    var img = document.createElement('img');
+    img.src = res.data.qr;
+    img.alt = 'Authenticator QR code';
+    img.width = 184;
+    img.height = 184;
+    box.appendChild(img);
+    var sec = document.createElement('p');
+    sec.className = 'mono';
+    sec.style.cssText = 'font-size:11px;word-break:break-all;color:var(--ink-muted);margin:8px 0 0';
+    sec.textContent = 'Secret: ' + res.data.secret;
+    box.appendChild(sec);
+    wireVerify(res.data.factorId);
+  }
+
+  function startChallenge(factorId) {
+    qs('mfa-title').textContent = 'Two-factor verification';
+    qs('mfa-sub').textContent = 'Enter the 6-digit code from your authenticator app.';
+    wireVerify(factorId);
+  }
+
+  function wireVerify(factorId) {
+    var form = qs('mfa-form');
+    var btn = qs('mfa-submit');
+    btn.disabled = false;
+    form.onsubmit = async function (e) {
+      e.preventDefault();
+      btn.disabled = true;
+      var code = qs('code').value.replace(/\s+/g, '');
+      var ch = await post('/mfa/challenge', factorId ? { factorId: factorId } : {});
+      if (ch.status !== 200) {
+        btn.disabled = false;
+        notice(qs('mfa-notice'), 'err', 'Could not start verification. Try again.');
+        return;
+      }
+      var vr = await post('/mfa/verify', {
+        factorId: ch.data.factorId,
+        challengeId: ch.data.challengeId,
+        code: code
+      });
+      if (vr.status === 200 && vr.data.ok) {
+        window.location.href = '/admin/';
+        return;
+      }
+      btn.disabled = false;
+      notice(qs('mfa-notice'), 'err', 'Invalid code. Please try again.');
+    };
+  }
+
+  // ---- dashboard ----
+  async function initDashboard() {
+    var root = qs('dash-root');
+    if (!root) return;
+    var r = await fetch(AUTH + '/me', {
+      credentials: 'same-origin',
+      headers: { accept: 'application/json' }
+    });
+    if (r.status !== 200) {
+      window.location.href = '/admin/login';
+      return;
+    }
+    var d = await r.json();
+    var who = qs('dash-who');
+    if (who) {
+      var mem = (d.identity && d.identity.memberships && d.identity.memberships[0]) || {};
+      who.textContent =
+        (d.user.email || '') + ' · ' + (mem.role || 'no role') + ' · ' + (d.aal || '');
+    }
+    var out = qs('logout-btn');
+    if (out) {
+      await getCsrf();
+      out.addEventListener('click', async function () {
+        await post('/logout', {});
+        window.location.href = '/admin/login';
+      });
+    }
   }
 
   document.addEventListener('DOMContentLoaded', function () {
     probe();
-    wireLogin();
+    initLogin();
+    initMfa();
+    initDashboard();
   });
 })();

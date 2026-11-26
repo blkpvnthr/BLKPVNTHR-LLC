@@ -17,8 +17,9 @@
           <span class="brand-mark" aria-hidden="true">B</span>
           <span class="brand-name">BLKPVNTHR LLC</span>
         </div>
-        <h1>Two-factor verification</h1>
-        <p class="auth-sub">Enter the 6-digit code from your authenticator app.</p>
+        <h1 id="mfa-title">Two-factor verification</h1>
+        <p class="auth-sub" id="mfa-sub">Enter the 6-digit code from your authenticator app.</p>
+        <div id="mfa-qr" style="text-align: center; margin-bottom: 8px"></div>
         <form id="mfa-form" novalidate>
           <div class="field">
             <label for="code">Authentication code</label>
@@ -29,13 +30,13 @@
               autocomplete="one-time-code"
               pattern="[0-9]*"
               maxlength="6"
+              required
             />
           </div>
-          <button class="btn btn-primary" type="submit" disabled>Verify</button>
+          <button id="mfa-submit" class="btn btn-primary" type="submit" disabled>Verify</button>
+          <p id="mfa-notice" class="notice notice-info" hidden></p>
         </form>
-        <p class="notice notice-info" style="margin-top: 18px">
-          TOTP enrollment and verification are provisioned in Phase 1.
-        </p>
+        <p class="auth-foot"><a href="/admin/login">Back to sign in</a></p>
         <div id="status" class="status" aria-live="polite">
           <span class="dot"></span>
           <span>…</span>

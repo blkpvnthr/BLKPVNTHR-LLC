@@ -11,7 +11,7 @@
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <div class="app">
+    <div class="app" id="dash-root">
       <aside class="side">
         <div class="brand">
           <span class="brand-mark" aria-hidden="true">B</span>
@@ -32,17 +32,37 @@
       <div>
         <header class="topbar">
           <strong style="color: var(--navy)">Dashboard</strong>
-          <span id="status" class="status" aria-live="polite">
-            <span class="dot"></span>
-            <span>…</span>
+          <span style="display: flex; align-items: center; gap: 16px">
+            <span id="status" class="status" aria-live="polite" style="margin-top: 0">
+              <span class="dot"></span>
+              <span>…</span>
+            </span>
+            <button
+              id="logout-btn"
+              type="button"
+              class="btn"
+              style="
+                width: auto;
+                padding: 7px 14px;
+                border-color: var(--line-strong);
+                background: var(--paper);
+              "
+            >
+              Sign out
+            </button>
           </span>
         </header>
         <main id="main" class="main">
+          <div class="card" style="margin-bottom: 16px">
+            <p class="muted mono" style="font-size: 12px; margin: 0 0 4px">Signed in as</p>
+            <p id="dash-who" style="margin: 0; font-weight: 600; color: var(--navy)">…</p>
+          </div>
           <div class="card">
             <h1 style="margin-top: 0; font-size: 20px">Corporate Administration &amp; Grant Readiness</h1>
             <p class="muted">
-              Secure foundation deployed. Modules — dashboard metrics, document vault, financials, research
-              programs, and funding — are being built on the shared database and row-level-security layer.
+              Authentication and access control are live. Record modules — dashboard metrics, document vault,
+              financials, research programs, and funding — are being built on the shared database and
+              row-level-security layer.
             </p>
           </div>
         </main>

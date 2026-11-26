@@ -1,47 +1,93 @@
 /**
  * Vercel Edge Middleware — server-side gate for the administrative portal.
  *
- * Runs before every /admin and /api/admin request. Public auth pages, admin
- * static assets, and the health check are allow-listed; everything else requires
- * a session, otherwise the request is redirected to the login page (pages) or
- * rejected with 401 (API).
- *
- * P0 note: this performs a session-cookie presence check only. Phase 1 replaces
- * it with full Supabase JWT verification + AAL2 (MFA) assurance + active-
- * membership lookup via @supabase/ssr. Returning nothing continues the request.
+ * Runs before every /admin and /api/admin request. Allow-listed: public auth
+ * pages, admin static assets, the health check, and the /api/admin/auth/*
+ * endpoints (which self-guard). Everything else requires:
+ *   1. a valid Supabase session (getUser() — validated against the Auth server),
+ *   2. AAL2 assurance (mandatory MFA), and
+ *   3. an active organization membership.
+ * Unmet → redirect to login/MFA (pages) or 401 (API). Refreshed session cookies
+ * are persisted on the continuing response.
  */
+import { createServerClient } from '@supabase/ssr';
+import { next } from '@vercel/edge';
+import { cookieList, serializeCookie } from './api/_lib/cookies.js';
 
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+const COOKIE_OPTS = { httpOnly: true, secure: true, sameSite: 'lax', path: '/' };
 const PUBLIC_BASES = new Set(['/admin/login', '/admin/mfa', '/admin/reset-password']);
 
 function isPublic(pathname) {
   if (pathname === '/api/admin/health') return true;
   if (pathname.startsWith('/admin/assets/')) return true;
+  if (pathname.startsWith('/api/admin/auth/')) return true; // self-guarding auth endpoints
   const base = pathname.replace(/\.html$/, '').replace(/\/+$/, '') || '/admin';
   return PUBLIC_BASES.has(base);
 }
 
-export default function middleware(request) {
-  const url = new URL(request.url);
-  const pathname = url.pathname;
+function redirect(request, to) {
+  const url = new URL(to, request.url);
+  return new Response(null, {
+    status: 302,
+    headers: { Location: url.toString(), 'Cache-Control': 'no-store' }
+  });
+}
 
-  if (isPublic(pathname)) return; // continue
+function unauthorized() {
+  return new Response(JSON.stringify({ error: 'unauthorized' }), {
+    status: 401,
+    headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
+  });
+}
 
-  const cookie = request.headers.get('cookie') || '';
-  const hasSession = /(?:^|;\s*)(sb-[A-Za-z0-9_-]+-auth-token|__admin_session)=/.test(cookie);
+export default async function middleware(request) {
+  const { pathname } = new URL(request.url);
+  if (isPublic(pathname)) return;
 
-  if (!hasSession) {
-    if (pathname.startsWith('/api/admin')) {
-      return new Response(JSON.stringify({ error: 'unauthorized' }), {
-        status: 401,
-        headers: { 'content-type': 'application/json', 'cache-control': 'no-store' }
-      });
+  const isApi = pathname.startsWith('/api/admin');
+  const setCookies = [];
+
+  const supabase = createServerClient(SUPABASE_URL, SUPABASE_KEY, {
+    cookies: {
+      getAll() {
+        return cookieList(request.headers.get('cookie') || '');
+      },
+      setAll(cookiesToSet) {
+        for (const { name, value, options } of cookiesToSet) {
+          setCookies.push(serializeCookie(name, value, { ...options, ...COOKIE_OPTS }));
+        }
+      }
     }
-    const login = new URL('/admin/login', request.url);
-    login.searchParams.set('next', pathname);
-    return Response.redirect(login, 302);
+  });
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+  if (!user)
+    return isApi
+      ? unauthorized()
+      : redirect(request, '/admin/login?next=' + encodeURIComponent(pathname));
+
+  // Mandatory MFA (AAL2).
+  const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+  if (!aal || aal.currentLevel !== 'aal2') {
+    return isApi ? unauthorized() : redirect(request, '/admin/mfa');
   }
 
-  return; // session present — full verification lands in Phase 1
+  // Active organization membership.
+  const { data: me, error: meErr } = await supabase.rpc('me');
+  const active =
+    !meErr &&
+    me &&
+    Array.isArray(me.memberships) &&
+    me.memberships.some((m) => m.status === 'active');
+  if (!active) return isApi ? unauthorized() : redirect(request, '/admin/login?e=no_access');
+
+  const headers = new Headers();
+  for (const c of setCookies) headers.append('Set-Cookie', c);
+  return next({ headers });
 }
 
 export const config = {
