@@ -6,11 +6,17 @@ docs/
 *.pdf
 *.xlsx
 *.csv
+*.heic
+*.zip
+/compressed/
+/compressed (1)/
+/At1as LLC/
 
-# Dependencies and build output
+# Dependencies and build output. site/ is generated from src/ by scripts/build.mjs.
 node_modules/
 .vercel/
 dist/
+site/
 
 # Environment
 .env
@@ -23,3 +29,9 @@ Thumbs.db
 *.swp
 .idea/
 .vscode/
+
+
+
+ 
+.vercel
+.env*

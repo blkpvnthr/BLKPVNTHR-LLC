@@ -148,7 +148,14 @@ for (const file of htmlFiles) {
 
     const target = path.startsWith('/') ? join(SITE, path) : resolve(dirname(file), path);
 
-    const resolved = path.endsWith('/') || path === '/' ? join(target, 'index.html') : target;
+    let resolved = path.endsWith('/') || path === '/' ? join(target, 'index.html') : target;
+
+    // Clean (extensionless) URLs resolve on the server via nginx
+    // `try_files $uri $uri.html $uri/`: /privacy is served from privacy.html.
+    // Mirror that here so extensionless links validate instead of 404-ing.
+    if (!existsSync(resolved) && !resolved.endsWith('.html') && existsSync(`${resolved}.html`)) {
+      resolved = `${resolved}.html`;
+    }
 
     if (!existsSync(resolved)) {
       fail(name, `broken local reference "${href}" (expected ${relative(SITE, resolved)})`);
@@ -226,14 +233,11 @@ for (const file of [...htmlFiles, ...all.filter((f) => f.endsWith('.js'))]) {
   }
 }
 
-// The licensing disclaimer is mandatory and must stay intact.
-const index = readFileSync(join(SITE, 'index.html'), 'utf8').replace(/\s+/g, ' ');
-const REQUIRED_COPY = [
-  'has not licensed ReactorCast and is not affiliated with or endorsed by Los Alamos National Laboratory or the U.S. Department of Energy'
-];
-for (const phrase of REQUIRED_COPY) {
-  if (!index.includes(phrase)) fail('index.html', `required disclosure copy missing: "${phrase}"`);
-}
+// The former mandatory ReactorCast licensing disclaimer was removed: BLKPVNTHR is
+// no longer pursuing that venture, so no ReactorCast content appears on the site.
+// The claim rules in claims.mjs still fail the build if any licence, partnership,
+// or endorsement with LANL/DOE is ever asserted, so a stray reintroduction cannot
+// pass silently.
 
 // LANL licensing contact addresses must never appear publicly.
 for (const file of htmlFiles) {

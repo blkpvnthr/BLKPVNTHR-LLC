@@ -5,10 +5,12 @@
   "type": "module",
   "description": "Corporate website for BLKPVNTHR LLC — blkpvnthr.com",
   "scripts": {
-    "dev": "npx --yes serve site -l 4321",
-    "format": "prettier --write \"site/**/*.{html,css,js}\" \"scripts/**/*.mjs\"",
-    "format:check": "prettier --check \"site/**/*.{html,css,js}\" \"scripts/**/*.mjs\"",
-    "validate": "node scripts/validate.mjs site",
+    "build": "node scripts/build.mjs",
+    "clean": "rm -rf site",
+    "dev": "node scripts/build.mjs && npx --yes serve site -l 4321",
+    "format": "prettier --write \"src/**/*.{html,css,js,mjs,json}\" \"scripts/**/*.mjs\"",
+    "format:check": "prettier --check \"src/**/*.{html,css,js,mjs,json}\" \"scripts/**/*.mjs\"",
+    "validate": "npm run build && node scripts/validate.mjs site",
     "test:unit": "node --test scripts/claims.test.mjs scripts/evidence-graph.test.mjs",
     "test": "npm run format:check && npm run validate && npm run test:unit"
   },

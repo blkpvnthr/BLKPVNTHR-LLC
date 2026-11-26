@@ -370,11 +370,11 @@ hr {
 }
 
 /* Active-state indicator — the one navigational use of the accent. */
-.nav-link[aria-current='true'] {
+.nav-link[aria-current='page'] {
   color: var(--ink);
 }
 
-.nav-link[aria-current='true']::after {
+.nav-link[aria-current='page']::after {
   content: '';
   position: absolute;
   left: 0.75rem;
@@ -1146,10 +1146,10 @@ hr {
 }
 
 /* --------------------------------------------------------------------------
-   11. ReactorCast section
+   11. Panel section (reused as a section background)
    -------------------------------------------------------------------------- */
 
-.reactorcast {
+.section-panel {
   background: var(--panel);
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
@@ -1767,10 +1767,10 @@ hr {
   }
 }
 
-/* 1060px, not 940px: the seven nav links plus the CTA and the brand need about
+/* 1120px, not 1060px: the seven nav links plus the CTA and the brand need about
    975px of header width, so below ~1053px the links wrap inside the fixed-height
    bar and the CTA is pushed off-screen. Keep main.js's matchMedia in sync. */
-@media (max-width: 1060px) {
+@media (max-width: 1120px) {
   .hero-grid,
   .company-grid,
   .contact-grid {
@@ -1820,7 +1820,7 @@ hr {
     font-size: var(--text-base);
   }
 
-  .nav-link[aria-current='true']::after {
+  .nav-link[aria-current='page']::after {
     left: 0;
     right: auto;
     width: 1.25rem;

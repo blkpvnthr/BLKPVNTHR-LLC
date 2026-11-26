@@ -1,0 +1,740 @@
+<!-- ================= 1. Hero ================= -->
+<section class="hero rail" id="home">
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Maryland · Research-driven technology · Decision systems</p>
+        <h1 class="hero-title">Decision intelligence for systems that matter.</h1>
+        <p class="hero-body">
+          BLKPVNTHR LLC develops evidence-grounded artificial intelligence, analytical engines, and
+          computational research infrastructure designed to support reliable, traceable, and defensible
+          decisions in complex institutional environments.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn-primary" href="/research">Explore our research</a>
+          <a class="btn btn-secondary" href="/research/strix">Discover STRIX</a>
+        </div>
+        <p class="hero-note">
+          Scientific research and proprietary technology development, supported by a working foundation in
+          analytical software engineering, data engineering, and customer-controlled deployment.
+          <a class="link" href="/contact">Discuss a strategic opportunity</a>
+        </p>
+      </div>
+
+      <!--
+              Decision Evidence Graph — a conceptual analytical panel. The chart,
+              tabs, legend, and objective grid illustrate how evidence-grounded
+              software connects a decision to its supporting record. Nothing here is
+              measured data: trace positions illustrate information flow, not
+              performance, and the objective values are status labels, not metrics.
+              It is a conceptual representation, not a product screenshot.
+            -->
+      <div class="model reveal">
+        <div class="model-bar">
+          <span class="model-label">Decision evidence graph</span>
+          <span class="model-tag">Conceptual representation</span>
+        </div>
+
+        <div class="model-tabs" role="tablist" aria-label="Evidence trace emphasis">
+          <button
+            class="model-tab"
+            role="tab"
+            id="tab-evidence"
+            aria-controls="graph-panel"
+            aria-selected="true"
+            data-trace="evidence"
+            type="button"
+          >
+            Evidence
+          </button>
+          <button
+            class="model-tab"
+            role="tab"
+            id="tab-analysis"
+            aria-controls="graph-panel"
+            aria-selected="false"
+            tabindex="-1"
+            data-trace="analysis"
+            type="button"
+          >
+            Verification
+          </button>
+          <button
+            class="model-tab"
+            role="tab"
+            id="tab-review"
+            aria-controls="graph-panel"
+            aria-selected="false"
+            tabindex="-1"
+            data-trace="review"
+            type="button"
+          >
+            Provenance
+          </button>
+        </div>
+
+        <div class="model-body" role="tabpanel" id="graph-panel" aria-labelledby="tab-evidence" tabindex="0">
+          <div class="model-chart">
+            <svg viewBox="0 0 336 136" role="img" aria-labelledby="graph-title" aria-describedby="graph-desc">
+              <title id="graph-title">Conceptual decision-evidence graph</title>
+              <desc id="graph-desc">
+                Three illustrative traces — evidence lineage, independent verification, and provenance trail —
+                rising across six process checkpoints from sources to decision. Trace positions illustrate
+                information flow, not measured performance.
+              </desc>
+
+              <g class="chart-grid" aria-hidden="true">
+                <line x1="24" y1="12" x2="324" y2="12" />
+                <line x1="24" y1="37" x2="324" y2="37" />
+                <line x1="24" y1="62" x2="324" y2="62" />
+                <line x1="24" y1="87" x2="324" y2="87" />
+                <line x1="24" y1="112" x2="324" y2="112" />
+                <line x1="24" y1="12" x2="24" y2="112" />
+                <line x1="84" y1="12" x2="84" y2="112" />
+                <line x1="144" y1="12" x2="144" y2="112" />
+                <line x1="204" y1="12" x2="204" y2="112" />
+                <line x1="264" y1="12" x2="264" y2="112" />
+                <line x1="324" y1="12" x2="324" y2="112" />
+              </g>
+
+              <!-- Filled area under the emphasized trace -->
+              <path
+                class="series-fill is-active"
+                data-fill="evidence"
+                d="M24,96 L84,87 L144,75 L204,62 L264,49 L324,36 L324,112 L24,112 Z"
+              />
+              <path
+                class="series-fill"
+                data-fill="analysis"
+                d="M24,101 L84,91 L144,76 L204,58 L264,45 L324,33 L324,112 L24,112 Z"
+              />
+              <path
+                class="series-fill"
+                data-fill="review"
+                d="M24,92 L84,85 L144,78 L204,67 L264,53 L324,39 L324,112 L24,112 Z"
+              />
+
+              <!-- Three rising traces (pathLength normalizes the staged draw) -->
+              <path
+                class="series is-active"
+                data-series="evidence"
+                pathLength="1"
+                d="M24,96 L84,87 L144,75 L204,62 L264,49 L324,36"
+              />
+              <path
+                class="series"
+                data-series="analysis"
+                pathLength="1"
+                d="M24,101 L84,91 L144,76 L204,58 L264,45 L324,33"
+              />
+              <path
+                class="series"
+                data-series="review"
+                pathLength="1"
+                d="M24,92 L84,85 L144,78 L204,67 L264,53 L324,39"
+              />
+
+              <!-- Checkpoint markers, shown on the emphasized trace only -->
+              <g class="series-dots is-active" data-dots="evidence" aria-hidden="true">
+                <circle cx="24" cy="96" r="2.4" />
+                <circle cx="84" cy="87" r="2.4" />
+                <circle cx="144" cy="75" r="2.4" />
+                <circle cx="204" cy="62" r="2.4" />
+                <circle cx="264" cy="49" r="2.4" />
+                <circle cx="324" cy="36" r="2.4" />
+              </g>
+              <g class="series-dots" data-dots="analysis" aria-hidden="true">
+                <circle cx="24" cy="101" r="2.4" />
+                <circle cx="84" cy="91" r="2.4" />
+                <circle cx="144" cy="76" r="2.4" />
+                <circle cx="204" cy="58" r="2.4" />
+                <circle cx="264" cy="45" r="2.4" />
+                <circle cx="324" cy="33" r="2.4" />
+              </g>
+              <g class="series-dots" data-dots="review" aria-hidden="true">
+                <circle cx="24" cy="92" r="2.4" />
+                <circle cx="84" cy="85" r="2.4" />
+                <circle cx="144" cy="78" r="2.4" />
+                <circle cx="204" cy="67" r="2.4" />
+                <circle cx="264" cy="53" r="2.4" />
+                <circle cx="324" cy="39" r="2.4" />
+              </g>
+
+              <!-- Six qualitative process checkpoints (no quantitative axis) -->
+              <g class="chart-axis" aria-hidden="true">
+                <text x="24" y="127" text-anchor="start">SOURCES</text>
+                <text x="84" y="127" text-anchor="middle">RETRIEVAL</text>
+                <text x="144" y="127" text-anchor="middle">ASSESSMENT</text>
+                <text x="204" y="127" text-anchor="middle">VERIFICATION</text>
+                <text x="264" y="127" text-anchor="middle">CONTRADICTION</text>
+                <text x="324" y="127" text-anchor="end">CONCLUSION</text>
+              </g>
+            </svg>
+          </div>
+
+          <ul class="model-legend">
+            <li class="legend-item is-active" data-legend="evidence">
+              <span class="legend-swatch" aria-hidden="true"></span>
+              Evidence lineage
+            </li>
+            <li class="legend-item" data-legend="analysis">
+              <span class="legend-swatch" aria-hidden="true"></span>
+              Independent verification
+            </li>
+            <li class="legend-item" data-legend="review">
+              <span class="legend-swatch" aria-hidden="true"></span>
+              Provenance trail
+            </li>
+          </ul>
+
+          <p class="model-note">Trace positions illustrate information flow, not measured performance.</p>
+        </div>
+
+        <p class="model-metrics-head">Design objectives</p>
+        <dl class="model-metrics">
+          <div class="metric">
+            <dt class="metric-label">Evidence</dt>
+            <dd class="metric-value">Linked</dd>
+            <dd class="metric-delta">to source records</dd>
+          </div>
+          <div class="metric">
+            <dt class="metric-label">Assertions</dt>
+            <dd class="metric-value">Verified</dd>
+            <dd class="metric-delta">independently, or withheld</dd>
+          </div>
+          <div class="metric">
+            <dt class="metric-label">Timeframe</dt>
+            <dd class="metric-value">Dated</dd>
+            <dd class="metric-delta">temporal validity assessed</dd>
+          </div>
+          <div class="metric">
+            <dt class="metric-label">Record</dt>
+            <dd class="metric-value">Reproducible</dd>
+            <dd class="metric-delta">decision basis retained</dd>
+          </div>
+        </dl>
+
+        <div class="model-foot">
+          <p class="model-caption">
+            The research goal: every conclusion stays connected to its sources, its verification, its temporal
+            validity, and a reproducible record.
+          </p>
+          <div class="model-foot-row">
+            <span class="provenance">
+              <span class="provenance-dot" aria-hidden="true"></span>
+              Provenance preserved · verification visible
+            </span>
+            <span class="model-label">Conceptual representation — not a product screenshot</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 2. Credibility strip ================= -->
+<section class="capability-strip" aria-label="Capabilities and research focus">
+  <div class="container">
+    <ul>
+      <li>Python analytical engines</li>
+      <li>Evidence &amp; provenance modeling</li>
+      <li>Data and knowledge infrastructure</li>
+      <li>Reproducible research</li>
+      <li>React decision interfaces</li>
+      <li>Customer-controlled deployment</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ================= 3. STRIX flagship ================= -->
+<section class="section section-panel" id="strix" aria-labelledby="strix-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">01</span>
+        Flagship research initiative
+      </p>
+      <h2 class="section-title" id="strix-title">STRIX</h2>
+      <p class="lead">
+        <strong>Structured Traceability, Retrieval, and Intelligence eXtraction.</strong>
+        STRIX is a research-stage computational intelligence platform investigating methods for generating
+        independently verifiable, temporally relevant, evidence-supported, and reproducible conclusions.
+      </p>
+    </div>
+
+    <div class="grid grid-3">
+      <article class="card reveal">
+        <p class="card-index">Research motivation</p>
+        <h3 class="card-title">Why existing methods fall short</h3>
+        <p class="card-body">
+          Contemporary AI systems can produce plausible output without showing that their assertions are
+          sufficiently supported, current, independently verifiable, or appropriate for a given institutional
+          context. STRIX investigates that gap directly.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <p class="card-index">Proposed capabilities</p>
+        <h3 class="card-title">What the research investigates</h3>
+        <p class="card-body">
+          Integrating evidence quality, temporal validity, provenance, contradiction analysis, uncertainty,
+          and independent verification into a single research and decision-support process — including the
+          ability to abstain when support is insufficient.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <p class="card-index">Current status</p>
+        <h3 class="card-title">Research and development</h3>
+        <p class="card-body">
+          STRIX is under active research. The capabilities described here are research objectives and
+          technical hypotheses, not validated performance claims. Advancement depends on documented
+          experimental evidence.
+        </p>
+      </article>
+    </div>
+
+    <div class="rc-cta">
+      <a class="btn btn-primary" href="/research/strix">Read the STRIX research overview</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 4. Capabilities ================= -->
+<section class="section rail" id="capabilities" aria-labelledby="capabilities-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">02</span>
+        Research &amp; engineering capabilities
+      </p>
+      <h2 class="section-title" id="capabilities-title">
+        Trustworthy computational intelligence, built on a working engineering foundation.
+      </h2>
+      <p class="lead">
+        Some of these are established engineering competencies the company practices today; others are
+        capabilities currently under research. Each card is labeled so the distinction stays clear.
+      </p>
+    </div>
+
+    <div class="grid grid-3">
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Evidence-grounded AI</h3>
+          <span class="status">Under research</span>
+        </div>
+        <p class="card-body">
+          Investigating methods that connect each assertion to supporting evidence and surface conclusions
+          that lack sufficient support.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Independent verification</h3>
+          <span class="status">Under research</span>
+        </div>
+        <p class="card-body">
+          Investigating independent, computational checks of candidate assertions rather than relying on a
+          single model's self-report.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Temporal intelligence</h3>
+          <span class="status">Under research</span>
+        </div>
+        <p class="card-body">
+          Investigating how to assess whether retrieved evidence is current and temporally appropriate to the
+          question being asked.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Analytical engines &amp; scenario modeling</h3>
+          <span class="status">Engineering capability</span>
+        </div>
+        <p class="card-body">
+          Python computation cores for simulation, projection, and quantitative analysis — deterministic,
+          testable, and separable from any interface.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Data &amp; knowledge infrastructure</h3>
+          <span class="status">Engineering capability</span>
+        </div>
+        <p class="card-body">
+          Connectors, ingestion pipelines, and documented APIs that bring external data into a model without
+          hand assembly, surfacing schema and source failures early.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Institutional knowledge governance</h3>
+          <span class="status">Under research</span>
+        </div>
+        <p class="card-body">
+          Investigating governed knowledge boundaries so separate institutional environments can be kept
+          distinct, with source-level provenance.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Reproducible research</h3>
+          <span class="status">Under research</span>
+        </div>
+        <p class="card-body">
+          Investigating research records that let the same conclusion be regenerated from the same evidence,
+          with its assumptions intact.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Customer-controlled deployment</h3>
+          <span class="status">Engineering capability</span>
+        </div>
+        <p class="card-body">
+          Applications designed to be packaged for customer-hosted or isolated environments, with role-based
+          access intended to keep sensitive data inside the customer's boundary.
+        </p>
+      </article>
+
+      <article class="card reveal">
+        <div class="product-head">
+          <h3 class="card-title">Decision interfaces</h3>
+          <span class="status">Engineering capability</span>
+        </div>
+        <p class="card-body">
+          React dashboards and analyst tooling designed for interpretation — legible to non-technical decision
+          makers, dense only where density helps.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 5. Technology portfolio ================= -->
+<section class="section rail" id="technologies" aria-labelledby="tech-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">03</span>
+        Technology portfolio
+      </p>
+      <h2 class="section-title" id="tech-title">Separate initiatives, with honest maturity indicators.</h2>
+      <p class="lead">
+        Research, applied engineering, and commercial services are distinct lines of work. We label where each
+        one actually is, not where we hope it will be.
+      </p>
+    </div>
+
+    <div class="grid grid-3">
+      <article class="product reveal">
+        <div class="product-head">
+          <h3 class="product-title">STRIX</h3>
+          <span class="status">Research &amp; development</span>
+        </div>
+        <p class="product-body">
+          Evidence-grounded, temporally aware, independently verifiable computational intelligence. The
+          company's flagship research initiative.
+        </p>
+        <p class="product-foot">
+          <a class="link" href="/research/strix">
+            STRIX research overview
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </p>
+      </article>
+
+      <article
+        class="product reveal has-preview"
+        data-preview-type="gif"
+        data-preview-src="/assets/preview-blkpvnthr-os.gif"
+        data-preview-label="BLKPVNTHR.OS preview"
+      >
+        <div class="product-head">
+          <h3 class="product-title">Applied computational engineering</h3>
+          <span class="status">In development</span>
+        </div>
+        <p class="product-body">
+          Adaptive computational systems, quantitative analytics, event-driven processing, and
+          high-performance software infrastructure — including the in-development BLKPVNTHR.OS financial
+          intelligence platform.
+        </p>
+        <p class="product-foot">
+          <a class="link" href="/technologies">
+            Technology portfolio
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </p>
+      </article>
+
+      <article
+        class="product reveal has-preview"
+        data-preview-type="gif"
+        data-preview-src="/assets/preview-pantherbyte.gif"
+        data-preview-label="PantherByte preview"
+      >
+        <div class="product-head">
+          <h3 class="product-title">PantherByte</h3>
+          <span class="status status-available">Available now</span>
+        </div>
+        <p class="product-body">
+          BLKPVNTHR's commercial engineering service line: managed digital infrastructure, software
+          engineering, workflow automation, integrations, and ongoing technical support.
+        </p>
+        <p class="product-foot">
+          <a class="link" href="https://pantherbyte.org" rel="noopener">
+            pantherbyte.org
+            <span class="arrow" aria-hidden="true">→</span>
+          </a>
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 6. Institutional applications ================= -->
+<section class="section rail" id="applications" aria-labelledby="apps-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">04</span>
+        Institutional applications
+      </p>
+      <h2 class="section-title" id="apps-title">Built for engineering-intensive institutions.</h2>
+      <p class="lead">
+        The proposed initial market is engineering-intensive institutions and research organizations, where
+        traceability and defensibility matter most. Potential applications include:
+      </p>
+    </div>
+
+    <div class="grid grid-3">
+      <article class="card reveal">
+        <p class="card-index">01</p>
+        <h3 class="card-title">Aerospace &amp; systems engineering</h3>
+        <p class="card-body">
+          Traceable technical decisions across long-lived, high-consequence engineering programs.
+        </p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">02</p>
+        <h3 class="card-title">Scientific &amp; technical research</h3>
+        <p class="card-body">
+          Reproducible literature and evidence synthesis with provenance and temporal validity.
+        </p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">03</p>
+        <h3 class="card-title">Software engineering &amp; cybersecurity</h3>
+        <p class="card-body">Evidence-linked analysis across code, configuration, and security knowledge.</p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">04</p>
+        <h3 class="card-title">Enterprise knowledge management</h3>
+        <p class="card-body">
+          Governed institutional knowledge with source-level provenance and access boundaries.
+        </p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">05</p>
+        <h3 class="card-title">Government &amp; regulated environments</h3>
+        <p class="card-body">Decision support where conclusions must be defended under external scrutiny.</p>
+      </article>
+      <article class="card reveal">
+        <p class="card-index">06</p>
+        <h3 class="card-title">Infrastructure &amp; energy systems</h3>
+        <p class="card-body">
+          Scenario modeling, lifecycle analysis, and evidence-backed planning for complex programs.
+        </p>
+      </article>
+    </div>
+
+    <div class="rc-cta">
+      <a class="btn btn-secondary" href="/applications">Explore institutional applications</a>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 7. Research-to-commercialization pathway ================= -->
+<section class="section section-panel" id="pathway" aria-labelledby="pathway-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">05</span>
+        From research to deployment
+      </p>
+      <h2 class="section-title" id="pathway-title">A disciplined research-to-commercialization path.</h2>
+      <p class="lead">
+        Advancement between stages depends on documented technical evidence and demonstrated commercial need —
+        not on optimism.
+      </p>
+    </div>
+
+    <ol class="stage-grid">
+      <li class="stage" data-phase="research">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Stage</span>
+            01
+          </span>
+          <span class="stage-phase">Research</span>
+        </p>
+        <h3 class="stage-title">Research</h3>
+        <p class="stage-body">
+          Define the scientific and engineering problem and the methods under investigation.
+        </p>
+      </li>
+      <li class="stage" data-phase="research">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Stage</span>
+            02
+          </span>
+          <span class="stage-phase">Feasibility</span>
+        </p>
+        <h3 class="stage-title">Technical feasibility</h3>
+        <p class="stage-body">
+          Investigate whether the approach is technically practical at institutional scale.
+        </p>
+      </li>
+      <li class="stage" data-phase="validate">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Stage</span>
+            03
+          </span>
+          <span class="stage-phase">Validation</span>
+        </p>
+        <h3 class="stage-title">Independent validation</h3>
+        <p class="stage-body">
+          Evaluate results against conventional baselines with documented, independent methods.
+        </p>
+      </li>
+      <li class="stage" data-phase="validate">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Stage</span>
+            04
+          </span>
+          <span class="stage-phase">Demonstration</span>
+        </p>
+        <h3 class="stage-title">Institutional demonstration</h3>
+        <p class="stage-body">
+          Demonstrate across independently governed knowledge environments using authorized material.
+        </p>
+      </li>
+      <li class="stage" data-phase="commercialize">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Stage</span>
+            05
+          </span>
+          <span class="stage-phase">Discovery</span>
+        </p>
+        <h3 class="stage-title">Customer discovery</h3>
+        <p class="stage-body">
+          Gather documented evidence of real institutional need before building for the market.
+        </p>
+      </li>
+      <li class="stage" data-phase="commercialize">
+        <p class="stage-meta">
+          <span class="stage-num">
+            <span class="visually-hidden">Stage</span>
+            06
+          </span>
+          <span class="stage-phase">Deployment</span>
+        </p>
+        <h3 class="stage-title">Commercial deployment</h3>
+        <p class="stage-body">
+          Advance to supported deployment only after validation and demonstrated commercial need.
+        </p>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ================= 8. Company & collaboration ================= -->
+<section class="section rail" id="company" aria-labelledby="company-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">06</span>
+        Company &amp; collaboration
+      </p>
+      <h2 class="section-title" id="company-title">Engineering-led, research-driven.</h2>
+    </div>
+
+    <div class="company-grid">
+      <div class="company-body">
+        <p>
+          BLKPVNTHR LLC is a Maryland technology company founded by Asmaa Abdul-Amin, whose prior engineering
+          experience includes building production software supporting NASA and Johns Hopkins Applied Physics
+          Laboratory mission platforms. The company pairs that engineering discipline with a research agenda
+          in trustworthy computational intelligence.
+        </p>
+        <p>
+          We are deliberately narrow: we take on work where correctness matters more than speed, and where a
+          conclusion has to survive scrutiny after it is delivered.
+        </p>
+        <div class="tags">
+          <span class="tag">Evidence-grounded AI</span>
+          <span class="tag">Provenance</span>
+          <span class="tag">Temporal knowledge</span>
+          <span class="tag">Independent verification</span>
+          <span class="tag">Reproducible research</span>
+          <span class="tag">Python</span>
+          <span class="tag">React</span>
+          <span class="tag">Data engineering</span>
+        </div>
+      </div>
+
+      <div class="contact-card">
+        <div>
+          <h3 class="subhead">Ways to collaborate</h3>
+        </div>
+        <ul class="interest-list">
+          <li>Research collaboration</li>
+          <li>Customer discovery &amp; demonstrations</li>
+          <li>Technical advisors</li>
+          <li>Commercial design partners</li>
+          <li>Technology licensing</li>
+          <li>Strategic investment discussions</li>
+        </ul>
+        <a class="btn btn-primary" href="/partnerships">Explore partnerships</a>
+        <div class="contact-meta">
+          <span>Maryland, United States</span>
+          <span>Responses typically within two business days</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 9. Contact CTA ================= -->
+<section class="section rail" id="contact" aria-labelledby="contact-title">
+  <div class="container">
+    <div class="section-head">
+      <p class="eyebrow">
+        <span class="eyebrow-index">07</span>
+        Contact
+      </p>
+      <h2 class="section-title" id="contact-title">Let's evaluate what is possible.</h2>
+      <p class="lead">
+        Tell us the decision you are trying to support and the constraints around it. If it is not a fit, we
+        will say so directly.
+      </p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-primary" href="/contact">Discuss a strategic opportunity</a>
+      <a class="btn btn-secondary" href="/research">Explore our research</a>
+    </div>
+  </div>
+</section>

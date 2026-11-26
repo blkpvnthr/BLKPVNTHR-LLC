@@ -48,7 +48,7 @@
 
     // Reset state when the layout returns to the desktop breakpoint.
     // Must match the nav breakpoint in styles.css (max-width: 1060px).
-    var desktop = window.matchMedia('(min-width: 1061px)');
+    var desktop = window.matchMedia('(min-width: 1121px)');
     var onChange = function (event) {
       if (event.matches) setOpen(false);
     };
@@ -213,7 +213,7 @@
           return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
         })[0];
 
-      // Sections without a nav link (#reactorcast) are never observed, so the
+      // Sections without a nav link are never observed, so the
       // candidate list goes empty while one is on screen. Hold the last known
       // section instead of clearing, which would blank the whole nav.
       if (candidate) lastCurrent = candidate;

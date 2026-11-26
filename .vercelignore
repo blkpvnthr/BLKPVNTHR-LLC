@@ -1,0 +1,11 @@
+# Strict allowlist. Vercel uploads ONLY what is re-included below; everything
+# else in this repo — docs/ (operating agreement, EIN, financials), *.pdf /
+# *.xlsx / *.csv / *.heic / *.zip, source, build tooling, and local archives —
+# can never reach a Vercel build or deployment.
+#
+# NOTE: when the Node build system lands (Phase 2), `site/` becomes generated
+# and this file is revised to allow the build inputs (src/, scripts/, api/,
+# package.json) instead of the prebuilt site/.
+*
+!site
+!site/**
