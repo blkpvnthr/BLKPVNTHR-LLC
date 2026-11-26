@@ -39,3 +39,6 @@ Thumbs.db
  
 .vercel
 .env*
+
+# Playwright MCP test artifacts
+.playwright-mcp/
