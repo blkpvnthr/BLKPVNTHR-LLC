@@ -20,9 +20,20 @@ export function json(res, status, obj) {
 }
 
 export function clientIp(req) {
+  // On Vercel, x-real-ip is the true connecting client IP and is not
+  // client-spoofable, unlike the left-most x-forwarded-for value (which the
+  // client controls). Prefer x-real-ip; fall back to the RIGHT-most XFF hop.
+  const real = req.headers['x-real-ip'];
+  if (real) return String(real).trim();
   const xff = req.headers['x-forwarded-for'];
-  if (xff) return String(xff).split(',')[0].trim();
-  return req.headers['x-real-ip'] || (req.socket && req.socket.remoteAddress) || 'unknown';
+  if (xff) {
+    const parts = String(xff)
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+    if (parts.length) return parts[parts.length - 1];
+  }
+  return (req.socket && req.socket.remoteAddress) || 'unknown';
 }
 
 export function requireMethod(req, res, method) {

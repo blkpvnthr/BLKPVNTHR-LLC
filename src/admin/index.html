@@ -4,8 +4,16 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
     <title>Dashboard · BLKPVNTHR LLC Admin</title>
     <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="/admin/assets/admin.css" />
     <script src="/admin/assets/env.js"></script>
   </head>
@@ -14,24 +22,27 @@
     <div class="app" id="dash-root">
       <aside class="side">
         <div class="brand">
-          <span class="brand-mark" aria-hidden="true">B</span>
-          <span class="brand-name">BLKPVNTHR LLC</span>
+          <img src="/assets/blkpvnthr-mark.png" alt="" width="30" height="30" decoding="async" />
+          <span class="brand-name">
+            BLKPVNTHR
+            <span class="brand-suffix">LLC</span>
+          </span>
         </div>
-        <p class="mono" style="font-size: 11px; color: #9fb0c4; line-height: 1.9">
-          OVERVIEW
+        <p class="side-nav">
+          Overview
           <br />
-          CORPORATE
+          Corporate
           <br />
-          RESEARCH &amp; DEVELOPMENT
+          Research &amp; Development
           <br />
-          FUNDING
+          Funding
           <br />
-          ADMINISTRATION
+          Administration
         </p>
       </aside>
       <div>
         <header class="topbar">
-          <strong style="color: var(--navy)">Dashboard</strong>
+          <strong class="topbar-title">Dashboard</strong>
           <span style="display: flex; align-items: center; gap: 16px">
             <span id="status" class="status" aria-live="polite" style="margin-top: 0">
               <span class="dot"></span>
@@ -40,13 +51,8 @@
             <button
               id="logout-btn"
               type="button"
-              class="btn"
-              style="
-                width: auto;
-                padding: 7px 14px;
-                border-color: var(--line-strong);
-                background: var(--paper);
-              "
+              class="btn btn-secondary"
+              style="width: auto; padding: 0.5rem 1rem"
             >
               Sign out
             </button>
@@ -54,12 +60,17 @@
         </header>
         <main id="main" class="main">
           <div class="card" style="margin-bottom: 16px">
-            <p class="muted mono" style="font-size: 12px; margin: 0 0 4px">Signed in as</p>
-            <p id="dash-who" style="margin: 0; font-weight: 600; color: var(--navy)">…</p>
+            <p
+              class="muted mono"
+              style="font-size: 0.68rem; letter-spacing: 0.06em; text-transform: uppercase; margin: 0 0 6px"
+            >
+              Signed in as
+            </p>
+            <p id="dash-who" style="margin: 0; font-weight: 600">…</p>
           </div>
           <div class="card">
-            <h1 style="margin-top: 0; font-size: 20px">Corporate Administration &amp; Grant Readiness</h1>
-            <p class="muted">
+            <h1>Corporate Administration &amp; Grant Readiness</h1>
+            <p class="muted" style="margin-top: 10px">
               Authentication and access control are live. Record modules — dashboard metrics, document vault,
               financials, research programs, and funding — are being built on the shared database and
               row-level-security layer.
