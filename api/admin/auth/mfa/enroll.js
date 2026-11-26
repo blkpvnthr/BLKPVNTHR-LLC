@@ -25,7 +25,10 @@ export default async function handler(req, res) {
     factorType: 'totp',
     friendlyName: 'Authenticator'
   });
-  if (error) return json(res, 400, { error: error.message });
+  if (error) {
+    console.error('[mfa/enroll] enroll failed:', error.message);
+    return json(res, 400, { error: 'enroll_failed' });
+  }
 
   return json(res, 200, {
     factorId: data.id,

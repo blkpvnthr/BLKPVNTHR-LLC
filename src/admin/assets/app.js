@@ -158,17 +158,10 @@
       e.preventDefault();
       btn.disabled = true;
       var code = qs('code').value.replace(/\s+/g, '');
-      var ch = await post('/mfa/challenge', factorId ? { factorId: factorId } : {});
-      if (ch.status !== 200) {
-        btn.disabled = false;
-        notice(qs('mfa-notice'), 'err', 'Could not start verification. Try again.');
-        return;
-      }
-      var vr = await post('/mfa/verify', {
-        factorId: ch.data.factorId,
-        challengeId: ch.data.challengeId,
-        code: code
-      });
+      var vr = await post(
+        '/mfa/verify',
+        factorId ? { factorId: factorId, code: code } : { code: code }
+      );
       if (vr.status === 200 && vr.data.ok) {
         window.location.href = '/admin/';
         return;
