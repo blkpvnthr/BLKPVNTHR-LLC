@@ -379,3 +379,205 @@ button {
     animation: none !important;
   }
 }
+
+/* ---------------------------------------------------- sidebar nav + page */
+.side-group {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin: 18px 0 6px;
+}
+.side-link {
+  display: block;
+  padding: 5px 8px;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  border-radius: var(--radius);
+}
+.side-link:hover {
+  color: var(--ink);
+  background: var(--panel-2);
+}
+.side-link.active {
+  color: var(--ink);
+  background: var(--panel-2);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+.side-link.disabled {
+  color: #5a5a55;
+  cursor: default;
+}
+.page-head {
+  margin-bottom: 18px;
+}
+.page-head h1 {
+  font-size: 1.4rem;
+}
+.page-head .muted {
+  margin-top: 4px;
+  font-size: 0.85rem;
+}
+
+/* ---------------------------------------------------- datatable */
+.dt-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+.dt-search,
+.dt-filter {
+  padding: 0.45rem 0.6rem;
+  font-family: inherit;
+  font-size: 0.85rem;
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+}
+.dt-search {
+  min-width: 180px;
+}
+.dt-search:focus,
+.dt-filter:focus {
+  outline: none;
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+.dt-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--ink-muted);
+  margin-left: auto;
+}
+.dt-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+.dt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+.dt-table th,
+.dt-table td {
+  text-align: left;
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.dt-table th {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  background: var(--panel-2);
+  position: sticky;
+  top: 0;
+}
+.dt-table th.sortable {
+  cursor: pointer;
+}
+.dt-table th.asc::after {
+  content: ' ▲';
+  color: var(--accent);
+}
+.dt-table th.desc::after {
+  content: ' ▼';
+  color: var(--accent);
+}
+.dt-table tbody tr:hover {
+  background: var(--panel-2);
+}
+.dt-actions {
+  display: flex;
+  gap: 6px;
+}
+.dt-act {
+  font-size: 0.72rem;
+  color: var(--accent);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  padding: 3px 8px;
+  background: none;
+}
+.dt-act:hover {
+  border-color: var(--accent-line);
+}
+.dt-pager {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+/* ---------------------------------------------------- modal */
+.dt-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 50;
+  overflow-y: auto;
+}
+.dt-modal {
+  width: 100%;
+  max-width: 560px;
+  background: var(--panel);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+}
+.dt-modal h2 {
+  font-size: 1.1rem;
+  margin: 0 0 16px;
+}
+.dt-modal textarea,
+.dt-modal select {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  font-family: inherit;
+  font-size: 0.9rem;
+  color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  resize: vertical;
+}
+.dt-form-actions {
+  margin-top: 18px;
+  display: flex;
+}
+.dt-detail {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 6px 14px;
+  font-size: 0.85rem;
+}
+.dt-detail dt {
+  color: var(--ink-faint);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+}
+.dt-detail dd {
+  margin: 0;
+  color: var(--ink);
+  word-break: break-word;
+}
+@media (max-width: 720px) {
+  .dt-check {
+    margin-left: 0;
+  }
+  .dt-detail {
+    grid-template-columns: 1fr;
+  }
+}

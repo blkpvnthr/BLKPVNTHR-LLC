@@ -35,6 +35,7 @@ import {
 import { join, dirname, resolve, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SITE, PAGES } from '../src/data/site.mjs';
+import { MODULES, NAV } from '../src/data/admin-modules.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'src');
@@ -160,6 +161,50 @@ function footerColumns() {
     .join('\n\n          ');
 }
 
+/** Shared template for a generated administrative record-module page. The page
+ * carries its table config as inert JSON; shell.js + datatable.js + page.js do
+ * the work (no inline scripts, CSP script-src 'self'). */
+function adminModulePage(title, cfg) {
+  const json = JSON.stringify(cfg).replace(/</g, '\\u003c');
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <meta name="color-scheme" content="dark" />
+    <title>${esc(title)} · BLKPVNTHR LLC Admin</title>
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/admin/assets/admin.css" />
+    <script src="/admin/assets/env.js"></script>
+    <script src="/admin/assets/modules.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#view">Skip to main content</a>
+    <div class="app">
+      <aside class="side" id="side"></aside>
+      <div>
+        <header class="topbar" id="topbar"></header>
+        <main id="view" class="main" tabindex="-1"></main>
+      </div>
+    </div>
+    <script type="application/json" id="table-config">${json}</script>
+    <script src="/admin/assets/admin-api.js"></script>
+    <script src="/admin/assets/shell.js"></script>
+    <script src="/admin/assets/datatable.js"></script>
+    <script src="/admin/assets/page.js"></script>
+  </body>
+</html>
+`;
+}
+
 /* ------------------------------------------------------------------ build */
 
 function build() {
@@ -191,6 +236,25 @@ function build() {
       join(OUT, 'admin', 'assets', 'env.js'),
       `window.__ADMIN_ENV__ = ${JSON.stringify(adminEnv)};\n`
     );
+    // Nav + built-slug registry consumed by the shell.
+    writeFileSync(
+      join(OUT, 'admin', 'assets', 'modules.js'),
+      `window.__ADMIN_MODULES__ = ${JSON.stringify({ nav: NAV, built: MODULES.map((m) => m.slug) })};\n`
+    );
+    // One page per record module, generated from the shared template.
+    for (const m of MODULES) {
+      const cfg = {
+        resource: `${m.schema}.${m.table}`,
+        title: m.title,
+        subtitle: m.subtitle,
+        columns: m.columns,
+        filters: (m.filters || []).map((k) => ({
+          key: k,
+          label: (m.columns.find((c) => c.key === k) || {}).label || k
+        }))
+      };
+      writeFileSync(join(OUT, 'admin', `${m.slug}.html`), adminModulePage(m.title, cfg));
+    }
   }
 
   const routes = [];
