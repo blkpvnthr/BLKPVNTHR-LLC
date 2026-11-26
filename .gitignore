@@ -1,8 +1,12 @@
 # ---------------------------------------------------------------------------
 # Private corporate records. These must never be committed: this repository is
 # public, and anything committed here is also served at blkpvnthr.com.
+# docs/* ignores everything in docs/ EXCEPT docs/admin/ (version-controlled
+# technical documentation — never put private records or secrets there; the
+# *.pdf/*.xlsx/*.csv rules below still apply inside it as a second guard).
 # ---------------------------------------------------------------------------
-docs/
+docs/*
+!docs/admin/
 *.pdf
 *.xlsx
 *.csv

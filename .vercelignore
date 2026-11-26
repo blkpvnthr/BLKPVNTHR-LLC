@@ -1,11 +1,18 @@
-# Strict allowlist. Vercel uploads ONLY what is re-included below; everything
-# else in this repo — docs/ (operating agreement, EIN, financials), *.pdf /
-# *.xlsx / *.csv / *.heic / *.zip, source, build tooling, and local archives —
-# can never reach a Vercel build or deployment.
-#
-# NOTE: when the Node build system lands (Phase 2), `site/` becomes generated
-# and this file is revised to allow the build inputs (src/, scripts/, api/,
-# package.json) instead of the prebuilt site/.
+# Strict allowlist for Vercel uploads. Everything is excluded by `*`, then the
+# build inputs are re-included. Private records (docs/, *.pdf/xlsx/csv/heic/zip),
+# secrets (.env*), local archives, and generated output (site/, node_modules/)
+# are therefore never uploaded. Vercel builds site/ from these inputs on deploy
+# via `npm run build` (buildCommand in vercel.json), and detects api/ functions
+# and middleware.js automatically.
 *
-!site
-!site/**
+
+!src
+!src/**
+!scripts
+!scripts/**
+!api
+!api/**
+!middleware.js
+!package.json
+!package-lock.json
+!vercel.json

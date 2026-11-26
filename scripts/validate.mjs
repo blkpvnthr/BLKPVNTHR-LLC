@@ -36,7 +36,13 @@ function walk(dir) {
   });
 }
 
-const all = walk(SITE);
+// The admin portal (site/admin/**) is a separate app with its own design system
+// and tests; it does not follow the marketing site's metadata/claim conventions,
+// so it is excluded from this validator.
+const all = walk(SITE).filter((f) => {
+  const r = relative(SITE, f);
+  return r !== 'admin' && !r.startsWith('admin/') && !r.startsWith('admin\\');
+});
 const htmlFiles = all.filter((f) => f.endsWith('.html'));
 const rel = (f) => relative(SITE, f);
 

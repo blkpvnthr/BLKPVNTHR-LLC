@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Sign in · BLKPVNTHR LLC Admin</title>
+    <link rel="icon" href="/assets/favicon-32.png" sizes="32x32" />
+    <link rel="stylesheet" href="/admin/assets/admin.css" />
+    <script src="/admin/assets/env.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <div class="auth-wrap">
+      <main id="main" class="auth-card">
+        <div class="brand">
+          <span class="brand-mark" aria-hidden="true">B</span>
+          <span class="brand-name">BLKPVNTHR LLC</span>
+        </div>
+        <h1>Administrative Portal</h1>
+        <p class="auth-sub">
+          Authorized personnel only. Access is invitation-based and requires multi-factor authentication.
+        </p>
+        <form id="login-form" novalidate>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="username" required />
+          </div>
+          <div class="field">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required />
+          </div>
+          <button class="btn btn-primary" type="submit">Continue</button>
+          <p id="login-notice" class="notice notice-info" hidden></p>
+        </form>
+        <p class="auth-foot"><a href="/admin/reset-password">Forgot password?</a></p>
+        <div id="status" class="status" aria-live="polite">
+          <span class="dot"></span>
+          <span>…</span>
+        </div>
+      </main>
+    </div>
+    <script src="/admin/assets/app.js" defer></script>
+  </body>
+</html>

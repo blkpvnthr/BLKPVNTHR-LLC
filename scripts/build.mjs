@@ -169,10 +169,29 @@ function build() {
   rmSync(OUT, { recursive: true, force: true });
   mkdirSync(OUT, { recursive: true });
 
-  // Static passthrough: assets/** then root static files (robots.txt, vercel.json).
+  // Static passthrough: assets/** then root static files (robots.txt).
   if (existsSync(join(SRC, 'assets')))
     cpSync(join(SRC, 'assets'), join(OUT, 'assets'), { recursive: true });
   if (existsSync(join(SRC, 'static'))) cpSync(join(SRC, 'static'), OUT, { recursive: true });
+
+  // Admin portal: a self-contained app copied verbatim to site/admin/ (it does
+  // NOT use the marketing head/header/footer partials or templating). Its public
+  // runtime config (Supabase URL + publishable key) is injected from the
+  // environment so the same source deploys to every environment with no
+  // hardcoded values. Secrets are never written here — only public, client-safe
+  // values. The admin tree is excluded from scripts/validate.mjs.
+  if (existsSync(join(SRC, 'admin'))) {
+    cpSync(join(SRC, 'admin'), join(OUT, 'admin'), { recursive: true });
+    mkdirSync(join(OUT, 'admin', 'assets'), { recursive: true });
+    const adminEnv = {
+      SUPABASE_URL: process.env.SUPABASE_URL || '',
+      SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY || ''
+    };
+    writeFileSync(
+      join(OUT, 'admin', 'assets', 'env.js'),
+      `window.__ADMIN_ENV__ = ${JSON.stringify(adminEnv)};\n`
+    );
+  }
 
   const routes = [];
 
