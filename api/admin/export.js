@@ -46,6 +46,7 @@ export default async function handler(req, res) {
     url.searchParams.get('archived') === '1'
       ? query.not('deleted_at', 'is', null)
       : query.is('deleted_at', null);
+  if (r.scope) for (const [col, val] of Object.entries(r.scope)) query = query.eq(col, val);
   for (const [k, v] of url.searchParams.entries()) {
     if (k.startsWith('f_')) {
       const col = k.slice(2);

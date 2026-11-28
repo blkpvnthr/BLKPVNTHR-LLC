@@ -56,6 +56,7 @@ async function list(req, res, supabase) {
     .from(r.table)
     .select(r.columns.join(','), { count: 'exact' });
   query = archived ? query.not('deleted_at', 'is', null) : query.is('deleted_at', null);
+  if (r.scope) for (const [col, val] of Object.entries(r.scope)) query = query.eq(col, val);
 
   for (const [k, v] of url.searchParams.entries()) {
     if (k.startsWith('f_')) {
@@ -89,6 +90,7 @@ async function mutate(req, res, supabase, user) {
   if (body.action === 'create') {
     const row = pick(body.values || {}, r.writable);
     row.organization_id = ORG;
+    if (r.scope) Object.assign(row, r.scope); // scoped modules force their slice
     const { data, error } = await supabase
       .schema(r.schema)
       .from(r.table)
@@ -106,14 +108,14 @@ async function mutate(req, res, supabase, user) {
     if (!body.id || body.rowVersion == null)
       return json(res, 400, { error: 'missing_id_or_version' });
     const row = pick(body.values || {}, r.writable);
-    const { data, error } = await supabase
+    let upd = supabase
       .schema(r.schema)
       .from(r.table)
       .update(row)
       .eq('id', body.id)
-      .eq('row_version', body.rowVersion)
-      .select(r.columns.join(','))
-      .maybeSingle();
+      .eq('row_version', body.rowVersion);
+    if (r.scope) for (const [col, val] of Object.entries(r.scope)) upd = upd.eq(col, val);
+    const { data, error } = await upd.select(r.columns.join(',')).maybeSingle();
     if (error) {
       console.error('[data.update]', error.message);
       return json(res, 400, { error: 'update_failed' });
@@ -130,6 +132,7 @@ async function mutate(req, res, supabase, user) {
         : { deleted_at: null, deleted_by: null, status: 'active' };
     let upd = supabase.schema(r.schema).from(r.table).update(patch).eq('id', body.id);
     if (body.rowVersion != null) upd = upd.eq('row_version', body.rowVersion);
+    if (r.scope) for (const [col, val] of Object.entries(r.scope)) upd = upd.eq(col, val);
     const { data, error } = await upd.select('id').maybeSingle();
     if (error) {
       console.error('[data.' + body.action + ']', error.message);

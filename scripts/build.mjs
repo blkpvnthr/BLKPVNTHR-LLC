@@ -244,7 +244,7 @@ function build() {
     // One page per record module, generated from the shared template.
     for (const m of MODULES) {
       const cfg = {
-        resource: `${m.schema}.${m.table}`,
+        resource: m.resource || `${m.schema}.${m.table}`,
         title: m.title,
         subtitle: m.subtitle,
         columns: m.columns,

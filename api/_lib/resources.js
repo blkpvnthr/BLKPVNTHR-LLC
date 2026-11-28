@@ -10,11 +10,18 @@ function buildRegistry() {
   const R = {};
   for (const m of MODULES) {
     const fields = m.columns.map((c) => c.key);
-    R[`${m.schema}.${m.table}`] = {
+    // A module's resource key is `m.resource` when set, else schema.table. This
+    // lets several modules (e.g. research initiatives) share one table under
+    // distinct keys, each narrowed by a fixed `scope` (col → value). Scope is
+    // enforced server-side: filtered on read/export, injected on create, and
+    // matched on update/archive so a scoped module can never touch another's rows.
+    const key = m.resource || `${m.schema}.${m.table}`;
+    R[key] = {
       schema: m.schema,
       table: m.table,
       read: m.read,
       write: m.write,
+      scope: m.scope || null,
       columns: [...fields, 'status', 'created_at', 'updated_at', 'row_version', 'id'],
       writable: fields,
       searchable: m.columns.filter((c) => c.searchable).map((c) => c.key),
