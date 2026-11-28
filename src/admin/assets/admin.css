@@ -182,9 +182,11 @@ button {
 
 /* --------------------------------------------------- auth (centered card) */
 .auth-wrap {
-  min-height: 100%;
-  display: grid;
-  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 24px;
 }
 .auth-card {
